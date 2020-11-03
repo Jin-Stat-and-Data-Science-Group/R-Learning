@@ -40,11 +40,17 @@ d1=read.xlsx('xxy/data1/GDP.xls',sheetIndex=1,encoding = 'UTF-8')##sheetIndex选
 d2=read.xlsx('xxy/data1/GDP.xls',sheetIndex=2,encoding = 'UTF-8')
 d3=read.xlsx('xxy/data1/GDP.xls',3,encoding = 'UTF-8')
 d4=read.xlsx('xxy/data1/GDP.xls',4,encoding = 'UTF-8')
-d11=as.matrix(d1)
-d22=as.matrix(d2)
-d33=as.matrix(d3[,-34])##将最后一列删除
-d44=as.matrix(d4)
-sum=rbind(d11,d22,d33,d44)##按行合并
+d11=as.vector(as.matrix(d1)[,-1])
+d22=as.vector(as.matrix(d2)[,-1])
+d33=as.vector(as.matrix(d3[,-34])[,-1])##将最后一列删除
+d44=as.vector(as.matrix(d4)[,-1])
+year=as.matrix(d1)[,1]#提取年份
+area=colnames(as.matrix(d1)[,-1])##提取省份
+area_year = expand.grid(area,year)##年份-省份合并
+d33[1921:2016]=NA
+d44[1953:2016]=NA##将d33/d44缺失值赋予空值
+sum=cbind(area_year,d11,d22,d33,d44)##按列合并，数据等长才能合并
+colnames(sum)=c('area','year','GDP','GDP指数','人均GDP','人均GDP指数')
 
 # 7、保存数据
 # 写出faithful数据集
