@@ -38,17 +38,40 @@ shuju[shuju$Year>=1978&shuju$KR>=1&shuju$KR<=1.2,]
 # 6. 把data文件夹中的 GDP.xls 中的4个子表都导入到R中，并把其转换成符合面板数据要求的数据（as.matrix,as.vector，rbind）
 install.packages('xlsx')
 library('xlsx')
+?read.table
+?expand.grid
+?as.matrix
+?as.vector
 
-data.list = list()
 for (i in 1:4){
-    data.list[[i]]=read.xlsx('./GDP.xls',i,encoding='UTF-8')
+    data.list[[i]]=read.xlsx('./GDP.xls',i,encoding='UTF-8',as.data.frame = TRUE)
 }
 
-a = as.matrix(data.list[[1]])
-b = as.matrix(data.list[[2]])
-c = as.matrix(data.list[[3]][,-34])
-d = as.matrix(data.list[[4]])
-gdp = rbind(a,b,c,d)
+
+func = function(x){
+    y = as.matrix(x)
+    z = as.vector(y[,-1])
+    return(z)}  #将数据转化向量,先转矩阵是将数据转化为一种类型，然后再转换为向量
+
+a = data.list[[1]]
+a1 = func(a)
+
+b = data.list[[2]]
+b1 = func(b)
+
+c = data.list[[3]][,-34]
+c1 = func(c)
+
+d = data.list[[4]]
+d1 = func(d)    #将数据转化为按列排序的向量
+
+timedata = as.matrix(c)[,1]    #提取第一列时间数据
+areadata = colnames(as.matrix(c))[-1]  #提取地区数据
+time.area = expand.grid(timedata,areadata)  #构造一个数据框，将时间、地区完全搭配
+
+m = cbind(time.area, a1, b1, c1, d1)
+colnames(m) = c('年份','地区','GDP','GDP指数','人均GDP','人均GDP指数')
+View(m)
 
 # 7. 保存数据
     ## (1)写出faithful数据集
