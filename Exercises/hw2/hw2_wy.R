@@ -69,9 +69,9 @@ timedata = as.matrix(c)[,1]    #提取第一列时间数据
 areadata = colnames(as.matrix(c))[-1]  #提取地区数据
 time.area = expand.grid(timedata,areadata)  #构造一个数据框，将时间、地区完全搭配
 
-m = cbind(time.area, a1, b1, c1, d1)
-colnames(m) = c('年份','地区','GDP','GDP指数','人均GDP','人均GDP指数')
-View(m)
+gdp = cbind(time.area, a1, b1, c1, d1)
+colnames(gdp) = c('年份','地区','GDP','GDP指数','人均GDP','人均GDP指数')
+View(gdp)
 
 # 7. 保存数据
     ## (1)写出faithful数据集
