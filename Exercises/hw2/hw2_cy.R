@@ -22,7 +22,10 @@ help(faithful)
 
 #3. 把data文件夹中的数据.xls 导入到R中
 
-dat = read.csv('D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/数据.csv')
+setwd('D:/study/硕士/研究生学习/R-Learning/Exercises/hw2')#设置当前路径
+dat = read.csv('./data/数据.csv', header = T) 
+
+#dat = read.csv('D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/数据.csv')
 #4. 显示 数据.xls 数据集的结构
 
 str(dat)
@@ -42,28 +45,38 @@ dat[dat$Year>=1978 & dat$KR>=1 & dat$KR<=1.2,]
     
 #6. 把data文件夹中的 GDP.xls 中的4个子表都导入到R中，并把其转换成符合面板数据要求的数据（as.matrix,as.vector，rbind）
 
+install.packages("xlsx")
+library(xlsx)
 data.list = list()
 for (i in 1:4){
-    data.list[[i]] = read.csv('D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/GDP.csv',i,encoding='UTF-8')
+    data.list[[i]] = read.xlsx('D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/GDP.xls',i,encoding='UTF-8') #确保各子表的年份取值范围为1949-2011年
     }
-    
-gdp1 = as.matrix(data.list[[1]])
-gdp2 = as.matrix(data.list[[2]])
-gdp3 = as.matrix(data.list[[3]])
-gdp4 = as.matrix(data.list[[4]])
-gdp = rbind(gdp1,gdp2,gdp3,gdp4)
+
+#数据先处理成矩阵，再处理为向量    
+#下列数据操作步骤基本为，先将数据处理为矩阵，删除掉第一列年份，然后再将其转化为向量
+gdp1 = as.vector(as.matrix(data.list[[1]])[,-1]) 
+gdp2 = as.vector(as.matrix(data.list[[2]])[,-1]) 
+gdp3 = as.vector(as.matrix(data.list[[3]][,-34])[,-1]) #第34列为NA,故删除。
+gdp4 = as.vector(as.matrix(data.list[[4]])[,-1]) 
+
+year = as.matrix(data.list[[1]])[,1] #提取年份
+province = colnames(as.matrix(data.list[[1]])[,-1]) #提取除年份之外的列名，即省份
+year_pro = expand.grid(year,province)
+panel = cbind(year_pro,gdp1,gdp2,gdp3,gdp4)
+colnames(panel) = c('年份','省份','GDP','GDP指数','人均GDP','人均GDP指数')
+View(panel) #查看panel
 
 #7. 保存数据
 
 ##7.1 写出faithful数据集
 
-write.csv2(faithful,file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/faithful.csv')
+write.csv2(faithful,file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/faithful.csv',row.names = FALSE)
 
 ##7.2 写出第5题中最后提取的子集
 
-write.csv2(dat[dat$Year>=1978&dat$KR>=1&dat$KR<=1.2,],file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/ziji.csv')
+write.csv2(dat[dat$Year>=1978&dat$KR>=1&dat$KR<=1.2,],file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/ziji.csv',row.names = FALSE)
 
 ##7.3 写出导入 GDP.xls 并整理好之后的数据集
 
-write.csv(gdp,file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/gdp_data.csv')
+write.csv(panel,file='D:/study/硕士/研究生学习/R-Learning/Exercises/hw2/data/gdp_panel.csv',row.names = FALSE)
 
