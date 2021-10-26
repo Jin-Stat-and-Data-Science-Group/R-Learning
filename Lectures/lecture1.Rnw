@@ -1,0 +1,835 @@
+\documentclass[handout,ignorenonframetext,11pt,xcolor=dvipsnames,hyperref={colorlinks,allcolors=.,urlcolor=blue, citecolor=violet, bookmarksdepth=4},aspectratio=1610]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\newcommand\hmmax{0} %% 防止Too many math alphabets used in version normal.
+\newcommand\bmmax{0} %% 防止Too many math alphabets used in version normal.
+\usepackage{lmodern,bm}   % 必需出现在amsmath等包前面，否则会出错
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+%\newif\ifbibliography
+
+%%\usepackage{natbib}
+%\bibliographystyle{plainnat}
+%
+%
+\hypersetup{
+            pdftitle={Multivariate regression and challenges in high-dimensions},
+            pdfauthor={金林},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \let\insertsectionnumber\relax
+    \let\sectionname\relax
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+\usepackage[BoldFont,SlantFont]{xeCJK}
+
+\setCJKmainfont[BoldFont=Microsoft YaHei]{SimSun}
+\setCJKsansfont[BoldFont=Microsoft YaHei Bold]{Microsoft YaHei}
+\setCJKromanfont{SimSun}
+\setCJKmonofont{SimSun}
+
+\IfFileExists{C:/Windows/Fonts/AdobeSongStd-Light.otf}{
+  \setCJKfamilyfont{song}{AdobeSongStd-Light}}{
+  \setCJKfamilyfont{song}{SimSun.ttc}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeHeitiStd-Regular.otf}{
+  \setCJKfamilyfont{hei}{AdobeHeitiStd-Regular}}{
+  \setCJKfamilyfont{hei}{SimHei.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeKaitiStd-Regular.otf}{
+  \setCJKfamilyfont{kai}{AdobeKaitiStd-Regular}}{
+  \setCJKfamilyfont{kai}{SimKai.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeFangsongStd-Regular.otf}{
+  \setCJKfamilyfont{fs}{AdobeFangsongStd-Regular}}{
+  \setCJKfamilyfont{fs}{SimFang.ttf}}
+
+\author[金林]{\CJKfamily{kai}金林 \\ jinlin@zuel.edu.cn \\}
+\institute[中南财经政法大学统计与数学学院]{\normalsize\CJKfamily{kai}中南财经政法大学统计与数学学院}
+
+\date{\today}
+
+\renewcommand{\contentsname}{\centerline{\textcolor{violet}{目 \ \ 录}}}    % 将Contents改为目录
+\renewcommand{\abstractname}{摘 \ \ 要}      % 将Abstract改为摘要
+\renewcommand{\refname}{参考文献}            % 将Reference改为参考文献
+\renewcommand\tablename{表}
+\renewcommand\figurename{图}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{colorlinks=true,citecolor=blue, urlcolor=blue, linkcolor=violet, bookmarksdepth=4,bookmarksopen=true,bookmarksopenlevel=2}{hyperref}
+
+\usepackage{lscape}
+\usepackage{indentfirst}
+\usepackage{textcomp}                      % provide many text symbols
+% \usepackage{setspace}                    % 各种间距设置 %% 不能出现在 beamer-template中,否则footnote出现错误
+
+
+% ---------------------------------Table------------------------------
+\usepackage{booktabs}
+\usepackage{array}                         % 提供表格中每一列的宽度及位置支持
+\usepackage{multirow}
+\usepackage{rotating}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+%\sloppy
+%\linespread{1.0}                           % 设置行距
+\setlength{\parindent}{22pt}
+%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+
+%% 参考文献
+\usepackage{gbt7714}
+\usepackage{natbib}
+\setlength{\bibsep}{2pt}
+
+
+\usepackage[utf8]{inputenc}
+% Package fontenc omitted
+% Package fixltx2e omitted
+\usepackage{graphicx}
+% Package longtable omitted
+% Package float omitted
+% Package wrapfig omitted
+\usepackage{soul}
+% Package textcomp omitted
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{latexsym}
+\usepackage{amssymb}
+% Package hyperref omitted
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\usepackage{tikz}
+
+						   
+\setmonofont{Consolas} % listings 中支持 consolas 字体，必需配合上面usepackage{fontenc} 中不出现[T1]才可以
+
+\lstset{numbers=left, numberstyle=\ttfamily\tiny\color{Gray}, stepnumber=1, numbersep=8pt,
+  frame=leftline,
+  framexleftmargin=0mm,
+  rulecolor=\color{CadetBlue},
+  backgroundcolor=\color{Periwinkle!20},
+  stringstyle=\color{CadetBlue},
+  flexiblecolumns=false,
+  aboveskip=5pt,
+  belowskip=0pt,
+  language=R,
+  basicstyle=\ttfamily\footnotesize,
+  columns=flexible,
+  keepspaces=true,
+  breaklines=true,
+  extendedchars=true,
+  texcl=false,  % 必须设置为false设置为true的时候 R 代码中不能含有多个注释符号 #
+  upquote=true, % 设置 引号为竖引号，但必需配合 上面 fontenc T1 使用，fontenc T1 又不能使用 consolas，所以冲突
+  showstringspaces=false,
+  keywordstyle=\bfseries,
+  keywordstyle=\color{Purple},
+  xleftmargin=20pt,
+  xrightmargin=10pt,
+  morecomment=[s]{\#}{\#},
+  commentstyle=\color{OliveGreen!60}\scriptsize,
+  tabsize=4}
+
+\tolerance=1000
+\usetheme{default}
+\setcounter{secnumdepth}{4}
+
+\usetheme{default}
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+\usecolortheme{seahorse}
+\setbeamercolor{frametitle}{fg=Blue, bg=white}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{section in toc shaded}[default][50]
+\setbeamertemplate{frametitle continuation}[from second][(续)] % 改变
+\setbeamertemplate{subsection in toc shaded}[default][20]
+\setbeamertemplate{subsection in toc}[square]
+\logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+\setbeamercovered{transparent}
+\setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+\usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+\setbeamerfont{block title}{shape=\normalfont, series=\bfseries}
+\setbeamercolor{block title}{fg=violet}
+\AtBeginSection[]
+{
+\setcounter{tocdepth}{2}
+\frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+}
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+\begin{frame}<beamer>
+\frametitle{}
+\large \tableofcontents[currentsection, sectionstyle=shaded/hide, subsectionstyle=show/shaded/hide]
+\end{frame}
+}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\everydisplay{\color{blue}}
+
+
+% ------------------------------ Title ------------------------------
+\title{\texttt{R} 软件介绍(1)：\texttt{R} 基础知识介绍}
+
+\author{\CJKfamily{kai}金\ \ 林\\}
+\institute[中南财经政法大学]{\CJKfamily{kai}
+  \footnotesize 中南财经政法大学\\
+  统计系}
+\date{\today}
+
+\makeatletter
+\@ifpackageloaded{subfig}{}{\usepackage{subfig}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfloat]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcounter{pandoccrossref@subfigures@footnote@counter}
+\newenvironment{pandoccrossrefsubfigures}{%
+\setcounter{pandoccrossref@subfigures@footnote@counter}{0}
+\begin{figure}\centering%
+\gdef\global@pandoccrossref@subfigures@footnotes{}%
+\DeclareRobustCommand{\footnote}[1]{\footnotemark%
+\stepcounter{pandoccrossref@subfigures@footnote@counter}%
+\ifx\global@pandoccrossref@subfigures@footnotes\empty%
+\gdef\global@pandoccrossref@subfigures@footnotes{{##1}}%
+\else%
+\g@addto@macro\global@pandoccrossref@subfigures@footnotes{, {##1}}%
+\fi}}%
+{\end{figure}%
+\addtocounter{footnote}{-\value{pandoccrossref@subfigures@footnote@counter}}
+\@for\f:=\global@pandoccrossref@subfigures@footnotes\do{\stepcounter{footnote}\footnotetext{\f}}%
+\gdef\global@pandoccrossref@subfigures@footnotes{}}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+
+% ---------------------------Document Begin----------------------------
+\begin{document}
+
+
+\frame{\titlepage}
+
+\frame[shrink=5]{\frametitle{提\ \ 纲\\[0.1cm]}
+    \footnotesize{\tableofcontents}}
+
+
+% --------------------------- R Prapare ----------------------------
+@
+<<prepare, echo=F, results=hid>>=
+
+options(digits=4)   #小数点位数
+options(scipen=10)
+graphics.off()      # 关闭图形设备
+rm(list=ls())       # 清除对象
+library(Cairo)      # R 图形输出pdf格式中文支持
+library(mgcv)
+
+## Prepare data
+
+
+@ %def
+
+% ----------------------------- Text --------------------------------
+\CJKfamily{song}
+
+\section{为什么要使用\texttt{R} 软件}
+\frame{\small \tableofcontents[currentsection]}
+
+\subsection{\texttt{R}是什么}
+
+\begin{frame}
+  \frametitle{\texttt{R}是什么}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item \texttt{R}是一种统计分析软件，如同\texttt{SPSS}，\texttt{Eviews}
+      \pause \item \texttt{R}是一种编程语言，如同\texttt{C}语言，
+      \texttt{Basic}语言
+      \pause \item 创立者是新西兰Auckland大学统计系两位教授\textcolor{red}{R}oss Ihaka和\textcolor{red}{R}obert Gentleman
+      \pause \item 是由AT\&T Bell 实验室发明的\texttt{S}语言的一种方言. \texttt{S}语言的另一个实现就是\texttt{S-PLUS}软件
+      \pause \item 当前\texttt{R}的开发和维护是由一些统计学家组成的the R Development Core Team来进行的
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+\subsection{\texttt{R}的优点}
+
+\begin{frame}
+  \frametitle{\texttt{R}的优点}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item \texttt{R}是开源软件(免费软件)
+      \pause \item \texttt{R}可以减少大量重复性操作
+      \pause \item \texttt{R}可以用于可复制化研究
+      \pause \item \texttt{R}可以对分析结果进一步加工
+      \pause \item \texttt{R}功能强大、更新快、使用者越来越多
+      \pause \item \texttt{R}具有强大的图形功能
+      \pause \item \texttt{R}可以在包括Unix，Linux，Windows，Mac OX等多种平台下运行
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+\subsection{\texttt{R}的缺点}
+
+\begin{frame}
+  \frametitle{\texttt{R}的缺点}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item \texttt{R}相对有较大的学习难度
+      \pause \item \texttt{R}相对需要较多的统计背景知识
+      \pause \item \texttt{R}的分析结果输出有时需进一步转换
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\subsection{学习策略}
+
+\begin{frame}
+  \frametitle{学习策略}
+  \begin{small}
+\begin{enumerate}
+      \pause \item  了解\texttt{R}的基本知识，包括下载、安装、编辑器的
+      使用等等
+      \pause \item  了解\texttt{R}的基本原理，查找、下载，安装包的方法，
+      包的使用方法等
+      \pause \item  \textrm{R}中分析数据的基本流程：数据导入，分析、作
+      图，保存分析结果和图形等
+      \pause \item  更高级内容(如各种高级统计方法、复杂作图，可复制化
+      研究等等)的学习：根据以后的需要，可能要花费更多的时间精力
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+\section{\texttt{R} 的安装与启动}
+\frame{\tableofcontents[currentsection]}
+\subsection{\texttt{R} 的下载和安装}
+
+\begin{frame}
+  \frametitle{\texttt{R} 的下载}
+    \begin{small}
+    \begin{enumerate}
+      \pause \item 访问网站 \url{http://www.r-project.org/}
+      \pause \item 选择下载镜像(mirror)
+      \pause \item 下载对应的版本
+\end{enumerate}
+  \end{small}
+  \end{frame}
+
+
+\begin{frame}
+  \frametitle{\texttt{R}的安装}
+  \begin{small}
+   \begin{enumerate}
+      \pause \item 双击运行安装程序，点下一步直到完成。
+      \pause \item 一台电脑上可以安装多个版本
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\subsection{\texttt{R}程序启动}
+
+\begin{frame}
+  \frametitle{\texttt{R}程序启动}
+  \begin{small}
+
+   \begin{enumerate}
+      \pause \item 图形界面方式：运行\texttt{Rgui.exe}
+      \pause \item 命令行方式：命令行下运行\texttt{rterm.exe}
+      \pause \item 从编辑器中运行：本质是运行\texttt{rterm.exe}
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{R}程序初步印象}
+  \begin{small}
+
+   \begin{enumerate}
+      \pause \item 开始部分给出了一些基本信息
+      \pause \item 尝试一些例子(\texttt{demo})
+
+@
+<<demo, echo=T, results=hid>>=
+demo()
+demo(lm.glm)
+demo(persp)
+@ %def
+
+\pause \item 退出\texttt{R}，保存工作
+
+\makeatletter
+\def\verbatim@font{\itshape\small\ttfamily\hyphenchar\font\m@ne\@noligs}
+\makeatother
+\begin{verbatim}
+> q()
+\end{verbatim}
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\section{\texttt{R} 的基本概念}
+\frame{\tableofcontents[currentsection]}
+
+\subsection{对象}
+
+\begin{frame}[containsverbatim]
+  \frametitle{对象(Objects)}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 对象是一个容器，用来存放R中的各种东西：数据，函数，
+     操作符，公式，分析结果等
+     \pause \item 对象都有一个名称
+     \pause \item 对象名称对字母大小写敏感，如\texttt{A}和\texttt{a}可
+     以用来表示不同的对象
+     \pause \item 可以用对象名称来显示对象的内容
+
+@
+<<objname, echo=T, results=hid>>=
+demo
+q
+@ %def
+
+     \pause \item 下面我们主要讨论一下数据对象
+
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim,shrink=1]
+  \frametitle{对象创建、列出和删除}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 创建对象：用赋值符(\texttt{ <- } 或者 \texttt{=})
+
+
+@
+<<remove.all, echo=F, results=hide>>=
+rm(list=ls())
+@ %def
+
+@
+<<objname, echo=T, results=verbatim>>=
+a <- 1
+b = "znufe"
+b
+@ %def
+
+     \pause \item 列出对象：使用\texttt{ls}函数，\texttt{ls.str}则给出
+     对象的基本信息
+
+@
+<<ls, echo=T, results=verbatim>>=
+ls()
+ls.str()
+@ %def
+
+     \pause \item 删除对象：使用\texttt{rm}函数
+
+@
+<<rm, echo=T, results=verbatim>>=
+rm(a)
+ls()
+@ %def
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\subsection{函数}
+\begin{frame}[containsverbatim]
+  \frametitle{函数(Functions)}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 函数是一种特殊的对象
+     \pause \item 函数主要用于操作处理对象
+     \pause \item 要带上一对括号，无论这个函数有没有参数，
+     例如 \verb|ls()|. 没有双括号，将显示该函数的内容(代码)
+@
+<<rm, echo=T, results=verbatim>>=
+q
+@ %def
+     \pause \item 有系统自带函数，也可以自己定义函数
+     \pause \item 系统自带函数都存放在\textcolor{red}{库(library)}中，
+     库由\textcolor{red}{包(packages)}组成。
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{运算符(Operators)}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 运算符是一种特殊的函数
+     \pause \item 常见运算符：算术运算符，比较运算符，逻辑运算符，其他
+     运算符
+     \pause \item 算术运算符：加减乘除幂 \verb|+, -, *, /, ^|
+     \pause \item 比较运算符：大于，大于等于，小于，小于等于，等于，不
+     等于 \verb|>, >=, <, <=, ==, !=|
+     \pause \item 逻辑运算符：与或非 \verb+&, |, !+
+     \pause \item 其他运算符：赋值符 \verb|<- 或 =|，提取符 \verb|$|，
+     矩阵乘法 \verb|%*%|
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\subsection{包}
+\begin{frame}[containsverbatim]
+  \frametitle{包(packages)}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item R自动的函数和数据集都存放在包中
+     \pause \item 包是存放在库中，每个包对应一个文件夹
+     \pause \item 包按照重要程度可以分为：
+
+       \begin{enumerate}
+         \begin{scriptsize}
+           \pause \item 核心包(Core Packages):共有12个包：base,
+           compiler, datasets, graphics, grDevices, grid, methods,
+           parallel, splines, stats, stats4, tcltk，其中最重要的
+           是\texttt{base}包
+           \pause \item 推荐包(Recommended
+           Packages):共有15个包：KernSmooth, MASS, Matrix, boot,
+           class, cluster, codetools, foreign, lattice, mgcv, nlme,
+           nnet, rpart, spatial, survival.
+           \pause \item 贡献
+           包(Contributed Packages):截至2013年5月8日\texttt{CRAN}上共
+           有4499个包
+         \end{scriptsize}
+       \end{enumerate}
+
+     \pause \item 核心包和推荐包已经安装，贡献包需要自己安装
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{包按任务类型分类}
+\vskip -2em
+\begin{tiny}
+  \begin{center}
+    \vskip -2em
+\begin{tabular}{l l l}
+                      &\textbf{CRAN Task Views}&\\
+                      \hline
+                      \textbf{Task} & \textbf{Description} & \textbf{中文描述}\\
+                      \hline
+                      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+                      Bayesian & Bayesian Inference & 贝叶斯推断 \\
+                      ChemPhys & Chemometrics and Computational Physics & 计量化学和计算物理 \\
+ClinicalTrials & Clinical Trial Design, Monitoring, and Analysis & 临床诊断\\
+Cluster & Cluster Analysis \& Finite Mixture Models & 聚类分析\\
+Distributions  & Probability Distributions & 概率分布\\
+Econometrics  & Computational Econometrics & 计量经济学\\
+Environmetrics  & Analysis of Ecological and Environmental Data & 环境计量学\\
+ExperimentalDesign  & Design of Experiments (DoE) & 试验设计\\
+Finance &  Empirical Finance & 金融学\\
+Genetics &  Statistical Genetics & 遗传学\\
+Graphics &  Graphic Displays \& Visualization & 图形展示和可视化\\
+gR  & gRaphical Models in R & 图论\\
+HighPerformanceComputing  & High-Performance and Parallel Computing with R & 高性能计算\\
+MachineLearning  & Machine Learning \& Statistical Learning & 机器学习\\
+MedicalImaging  & Medical Image Analysis & 医学图像分析\\
+Multivariate  & Multivariate Statistics & 多元统计\\
+NaturalLanguageProcessing  & Natural Language Processing & 语言处理 \\
+OfficialStatistics  & Official Statistics \& Survey Methodology & 官方统计\\
+Optimization &  Optimization and Mathematical Programming & 优化理论\\
+Pharmacokinetics &  Analysis of Pharmacokinetic Data & 药理学\\
+Phylogenetics  & Phylogenetics, Especially Comparative Methods & 种系遗传学 \\
+Psychometrics &  Psychometric Models and Methods & 心理计量学\\
+ReproducibleResearch &  Reproducible Research & 可再生研究\\
+Robust &  Robust Statistical Methods & 稳健方法\\
+SocialSciences &  Statistics for the Social Sciences & 社会统计学\\
+Spatial &  Analysis of Spatial Data & 空间数据\\
+Survival  & Survival Analysis & 生存分析\\
+TimeSeries  & Time Series Analysis & 时间序列\\
+\hline
+\end{tabular}
+\end{center}
+\end{tiny}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{包的查找、安装、更新与删除}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 查找已经安装的包，使用\texttt{library}函数
+@
+<<rm, echo=T, results=verbatim>>=
+library()
+@ %def
+\pause \item 如何查找相关包
+
+   \begin{enumerate}
+     \begin{scriptsize}
+       \pause \item 文献或其他人推荐\pause \item 按贡献包任务分类查
+       找\pause \item 在贡献包列表中按关键字查找
+     \end{scriptsize}
+\end{enumerate}
+
+     \pause \item 如何安装包
+        \begin{enumerate}
+     \begin{scriptsize}
+       \pause \item 使用Rgui的菜单安装
+       \pause \item 使用\texttt{install.packages}函数
+
+\begin{verbatim}
+> install.packages("sem")
+\end{verbatim}
+
+
+     \end{scriptsize}
+   \end{enumerate}
+
+     \pause \item 如何更新包
+        \begin{enumerate}
+     \begin{scriptsize}
+       \pause \item 使用Rgui的菜单更新(推荐)
+       \pause \item 使用\texttt{update.packages}函数
+
+
+     \end{scriptsize}
+   \end{enumerate}
+\pause \item 如何删除包：使用函数\texttt{romove.packages}
+
+\begin{verbatim}
+> remove.packages("sem")
+\end{verbatim}
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{包的使用}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 确保要使用的包已经安装
+
+\begin{verbatim}
+> install.packages("sem")
+\end{verbatim}
+
+
+\pause \item 使用包之前必须加载(load)包，使用\texttt{library}函数
+@
+<<echo=T, results=verbatim>>=
+library("sem")
+@
+
+\pause \item 查看已经加载的包，使用\texttt{search()}函数
+@
+<<echo=T, results=hide>>=
+search()
+@
+
+\pause \item 启动默认加载的包有7个：\texttt{base, methods, stats,
+  utils, datasets, graphics, grDevices}
+
+\pause \item 删除加载的包，使用 \texttt{detach}函数. 注：1.\texttt{detach}不
+会从硬盘删除包，2.\texttt{base}不能删除，3.注意\texttt{detach}的特殊用
+法
+
+
+\begin{verbatim}
+> detach("package:stats")
+\end{verbatim}
+
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\section{获取帮助}
+
+\subsection{R的帮助系统}
+
+\begin{frame}[containsverbatim]
+  \frametitle{获取帮助}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 获取函数的帮助，使用\texttt{help}或\texttt{?}
+
+\begin{verbatim}
+?ls
+help("?")
+\end{verbatim}
+
+
+\pause \item 获取包的帮助，使用\texttt{help}函数
+
+\begin{verbatim}
+help(package="sem")
+\end{verbatim}
+
+
+
+\pause \item 浏览整个帮助文件，使用\texttt{help.start}函数
+
+\begin{verbatim}
+help.start()
+\end{verbatim}
+
+
+
+\pause \item 搜索帮助系统，使用\texttt{help.search(??)}函数或者
+\texttt{apropos}函数
+
+
+\begin{verbatim}
+help.search("sem")
+apropos("help")
+\end{verbatim}
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\section{R运行方式和编辑器}
+
+\subsection{运行方式}
+
+\begin{frame}[containsverbatim]
+  \frametitle{两种运行方式}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 交互运行方式(interactive)
+
+\pause \item 批运行方式(batch)，编写R程序文件
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\subsection{编辑器}
+
+\begin{frame}[containsverbatim]
+  \frametitle{常用编辑器}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 系统自带的\texttt{Rgui}
+
+
+
+\pause \item \texttt{Tinn-R}编辑器
+
+
+\pause \item \texttt{Rstudio}编辑器
+
+
+\pause \item \texttt{Emacs + ESS}编辑器
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+% ---------------------------Reference--------------------------
+%% \begin{frame}[allowframebreaks]
+%%   \frametitle{参考文献}
+%%   \footnotesize
+%%   \bibliographystyle{GBT7714-2005N}
+%%   \bibliography{thesis}
+%% \end{frame}
+
+
+\end{document}

@@ -1,0 +1,190 @@
+* 概率分布
+  :PROPERTIES:
+  :CUSTOM_ID: 概率分布
+  :END:
+
+*** R中的概率分布
+    :PROPERTIES:
+    :CUSTOM_ID: r中的概率分布
+    :END:
+
+-  To get a full list of the distributions available in R you can use
+   the following command:\\
+   =help(Distributions)=
+
+*** 4个前缀
+    :PROPERTIES:
+    :CUSTOM_ID: 个前缀
+    :END:
+
+-  For every distribution there are four commands. The commands for each
+   distribution are prepended with a letter to indicate the
+   functionality:
+
+   1. “d” returns the height of the probability density function
+   2. “p” returns the cumulative density function
+
+#+BEGIN_SRC R
+    a=1
+    b=2
+#+END_SRC
+
+1. “q” returns the inverse cumulative density function (quantiles)
+2. “r” returns randomly generated numbers
+
+*** 一些例子
+    :PROPERTIES:
+    :CUSTOM_ID: 一些例子
+    :END:
+
+-  see =distributions.R=
+
+* 概率图(Probability plot)
+  :PROPERTIES:
+  :CUSTOM_ID: 概率图probability-plot
+  :END:
+
+*** 概率图(Probability plot)
+    :PROPERTIES:
+    :CUSTOM_ID: 概率图probability-plot-1
+    :END:
+
+-  In statistics, a probability plot is a graphical technique for
+   comparing two data sets,
+
+   -  either two sets of empirical observations,
+   -  one empirical set against a theoretical set,
+   -  or (more rarely) two theoretical sets against each other.
+
+-  It commonly means one of:
+
+   1. P--P plot, "Probability-Probability" or "Percent-Percent" plot;
+   2. Q--Q plot, "Quantile-Quantile" plot, which is more commonly used.
+      Special cases include the
+
+   -  Normal probability plot, a Q--Q plot against the standard normal
+      distribution;
+
+-  The term "probability plot" may be used to refer to both of these
+   types of plot, or the term "probability plot" may be used to refer
+   specifically to a P-P plot.
+-  Not to be confused with probability curves.
+
+*** P-P图
+    :PROPERTIES:
+    :CUSTOM_ID: p-p图
+    :END:
+
+-  A probability-probability (P-P) plot is used to see if a given set of
+   data follows some specified distribution. It should be approximately
+   linear if the specified distribution is the correct model.
+-  The probability-probability (P-P) plot is constructed using the
+   theoretical cumulative distribution function, F(x), of the specified
+   model. The values in the sample of data, in order from smallest to
+   largest, are denoted x(1), x(2), ..., x(n). For i = 1, 2, ....., n,
+   $F(x(i))$ is plotted against (i-0.5)/n.
+
+*** Q-Q图
+    :PROPERTIES:
+    :CUSTOM_ID: q-q图
+    :END:
+
+-  A quantile-quantile (Q-Q) plot is used to see if a given set of data
+   follows some specified distribution. It should be approximately
+   linear if the specified distribution is the correct model.
+-  The quantile-quantile (Q-Q) plot is constructed using the theoretical
+   cumulative distribution function, F(x), of the specified model. The
+   values in the sample of data, in order from smallest to largest, are
+   denoted x(1), x(2), ..., x(n). For i = 1, 2, ....., n, x(i) is
+   plotted against $F^{-1}((i-0.5)/n)$ .
+
+* 统计模拟
+  :PROPERTIES:
+  :CUSTOM_ID: 统计模拟
+  :END:
+
+* Export Configuration 					   :noexport:ARCHIVE:
+#+LATEX_CLASS_OPTIONS: [11pt,xcolor=dvipsnames,aspectratio=1610,hyperref={bookmarksdepth=4}]
+# +LATEX_CLASS_OPTIONS: [UTF8,a4paper,12pt]{ctexart}  % Latex 去掉上面的语句，加上本语句
+#+LaTeX_HEADER_EXTRA: % -------------------------- Document Title -----------------------------
+#+LATEX_HEADER_EXTRA: \usepackage{titling}
+#+LATEX_HEADER_EXTRA: \pretitle{\begin{center}\vskip -1em\Large\textbf}
+#+LATEX_HEADER_EXTRA: \posttitle{\thanks{\textbf{基金项目}：中南财经政法大学基本科研业务费青年教师创新项目（20132049）；中南财经政法大学2013年实验教学项目《统计学实验课程动态图示项目建设》}\par\end{center}}
+#+LATEX_HEADER_EXTRA: \preauthor{\begin{center}\CJKfamily{kai}
+#+LATEX_HEADER_EXTRA: \lineskip -1em%
+#+LATEX_HEADER_EXTRA: \begin{tabular}[t]{c}}
+#+LATEX_HEADER_EXTRA: \postauthor{\end{tabular}\par\end{center}}
+#+LATEX_HEADER_EXTRA: \predate{\begin{center}\CJKfamily{kai}\vskip -1.2em}
+#+LATEX_HEADER_EXTRA: \postdate{\par\end{center}\vskip -2em}
+#+LaTeX_HEADER_EXTRA: % ------------------------Chapter Section Title-------------------------
+#+LaTeX_HEADER_EXTRA: \usepackage{titlesec}
+#+LaTeX_HEADER_EXTRA: \titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+#+LaTeX_HEADER_EXTRA: \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+#+LaTeX_HEADER_EXTRA: \titlespacing{\section}{0pt}{1ex plus 1ex minus .2ex}{1ex plus 1ex minus .2ex}
+#+LaTeX_HEADER_EXTRA: \titlespacing{\subsection}{0pt}{0.5ex plus 1ex minus .2ex}{0.5ex plus 1ex minus .2ex}
+#+LaTeX_HEADER_EXTRA: % ------------------------Figure and Table Caption---------------------
+#+LaTeX_HEADER_EXTRA: \makeatletter                        % 图表标题格式设置
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@table}[1]{\small \bfseries\textcolor{Violet}{\tablename\thetable~~}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@figure}[1]{\small \CJKfamily{hei} \textcolor{Violet}{\figurename\thefigure~~}}
+#+LaTeX_HEADER_EXTRA: \makeatother
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thefigure}{\arabic{figure}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thetable}{\arabic{table}}
+#+LaTeX_HEADER_EXTRA: \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+#+LaTeX_HEADER_EXTRA: % -----------------------------Ref and Bib----------------------------
+#+LaTeX_HEADER_EXTRA: \usepackage[super,square,sort&compress]{natbib}      % 参数代表：数字和排序与压缩
+#+LaTeX_HEADER_EXTRA: \setlength{\bibsep}{0ex}                             % 参考文献中行距缩小
+
+#+LaTeX_HEADER_EXTRA: \usepackage[top=2cm,bottom=2cm,left=3cm,right=3cm]{geometry}
+#+LaTeX_HEADER_EXTRA: \sloppy
+#+LaTeX_HEADER_EXTRA: \linespread{1.1}                    % 设置行距
+#+LaTeX_HEADER_EXTRA: \setlength{\parindent}{24pt}        % 段落缩进
+#+LaTeX_HEADER_EXTRA: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+#+LaTeX_HEADER_EXTRA: \pagestyle {plain}                  % 去掉页眉
+#+LaTeX_HEADER_EXTRA: \usepackage{enumitem}               % 设置item间距
+#+LaTeX_HEADER_EXTRA: \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}  % 设置item间距
+#+LaTeX_HEADER_EXTRA: \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt} % 设置枚举间距
+# +LaTeX_HEADER_EXTRA: \floatsetup[table]{style=plain,capposition=top,font=small}% 在.emacs文件中加载的floatsetup包取代了float包
+# +LATEX_HEADER: \author{\CJKfamily{kai} 金\quad 林 \\ \normalsize \CJKfamily{kai} （中南财经政法大学\, 统计与数学学院\, 湖北\, 武汉\, 430073）}
+#+LATEX_HEADER: \author{\CJKfamily{kai} 金 \enspace 林 \\ \CJKfamily{kai} 中南财经政法大学统计系 \\ jinlin82@qq.com}
+
+
+#+BEAMER_HEADER: \usetheme{default}
+#+BEAMER_HEADER: \useinnertheme[shadow]{rounded}
+#+BEAMER_HEADER: \useoutertheme{infolines}
+#+BEAMER_HEADER: \usecolortheme{seahorse}
+#+BEAMER_HEADER: \setbeamercolor{frametitle}{fg=Blue, bg=white}
+#+BEAMER_HEADER: \setbeamercolor{titlelike}{parent=structure}
+#+BEAMER_HEADER: \setbeamertemplate{caption}[numbered]
+#+BEAMER_HEADER: \setbeamertemplate{section in toc shaded}[default][50]
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc shaded}[default][20]
+# +BEAMER_HEADER: \setbeamertemplate{section in toc}[circle]
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc}[square]
+#+BEAMER_HEADER: \logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+#+BEAMER_HEADER: \setbeamercovered{transparent}
+#+BEAMER_HEADER: \setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+#+BEAMER_HEADER: \usefonttheme[onlylarge]{structuresmallcapsserif}
+#+BEAMER_HEADER: \usefonttheme[onlymath]{serif}
+#+BEAMER_HEADER: \setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+
+#+BEAMER_HEADER: \AtBeginSection[]
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \setcounter{tocdepth}{2}
+#+BEAMER_HEADER: \frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \AtBeginSubsection[] % Do nothing for \subsection*
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \begin{frame}<beamer>
+#+BEAMER_HEADER: \frametitle{}
+#+BEAMER_HEADER: \Large \tableofcontents[currentsubsection,sectionstyle=hide/hide, subsectionstyle=show/shaded/hide]
+#+BEAMER_HEADER: \end{frame}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+#+BEAMER_HEADER: \author[金\; 林(中南财经政法大学统计系)]{\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin82@qq.com}
+
+
+#+AUTHOR:\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin82@qq.com
+#+EMAIL: jinlin82@qq.com
+# +DATE: 2015年2月4日
+#+OPTIONS: H:3 toc:1 num:4 LaTeX:nil ^:{} email:nil tex:t author:nil arch:nil
+#+TITLE: R 软件介绍 (5)： 概率统计
+#+PROPERTY: header-args

@@ -1,0 +1,810 @@
+\documentclass[handout,ignorenonframetext,11pt,xcolor=dvipsnames,hyperref={colorlinks,allcolors=.,urlcolor=blue, citecolor=violet, bookmarksdepth=4},aspectratio=1610]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\newcommand\hmmax{0} %% 防止Too many math alphabets used in version normal.
+\newcommand\bmmax{0} %% 防止Too many math alphabets used in version normal.
+\usepackage{lmodern,bm}   % 必需出现在amsmath等包前面，否则会出错
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+%\newif\ifbibliography
+
+%%\usepackage{natbib}
+%\bibliographystyle{plainnat}
+%
+%
+\hypersetup{
+            pdftitle={Multivariate regression and challenges in high-dimensions},
+            pdfauthor={金林},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \let\insertsectionnumber\relax
+    \let\sectionname\relax
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+\usepackage[BoldFont,SlantFont]{xeCJK}
+
+\setCJKmainfont[BoldFont=Microsoft YaHei]{SimSun}
+\setCJKsansfont[BoldFont=Microsoft YaHei Bold]{Microsoft YaHei}
+\setCJKromanfont{SimSun}
+\setCJKmonofont{SimSun}
+
+\IfFileExists{C:/Windows/Fonts/AdobeSongStd-Light.otf}{
+  \setCJKfamilyfont{song}{AdobeSongStd-Light}}{
+  \setCJKfamilyfont{song}{SimSun.ttc}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeHeitiStd-Regular.otf}{
+  \setCJKfamilyfont{hei}{AdobeHeitiStd-Regular}}{
+  \setCJKfamilyfont{hei}{SimHei.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeKaitiStd-Regular.otf}{
+  \setCJKfamilyfont{kai}{AdobeKaitiStd-Regular}}{
+  \setCJKfamilyfont{kai}{SimKai.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeFangsongStd-Regular.otf}{
+  \setCJKfamilyfont{fs}{AdobeFangsongStd-Regular}}{
+  \setCJKfamilyfont{fs}{SimFang.ttf}}
+
+\author[金林]{\CJKfamily{kai}金林 \\ jinlin@zuel.edu.cn \\}
+\institute[中南财经政法大学统计与数学学院]{\normalsize\CJKfamily{kai}中南财经政法大学统计与数学学院}
+
+\date{\today}
+
+\renewcommand{\contentsname}{\centerline{\textcolor{violet}{目 \ \ 录}}}    % 将Contents改为目录
+\renewcommand{\abstractname}{摘 \ \ 要}      % 将Abstract改为摘要
+\renewcommand{\refname}{参考文献}            % 将Reference改为参考文献
+\renewcommand\tablename{表}
+\renewcommand\figurename{图}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{colorlinks=true,citecolor=blue, urlcolor=blue, linkcolor=violet, bookmarksdepth=4,bookmarksopen=true,bookmarksopenlevel=2}{hyperref}
+
+\usepackage{lscape}
+\usepackage{indentfirst}
+\usepackage{textcomp}                      % provide many text symbols
+% \usepackage{setspace}                    % 各种间距设置 %% 不能出现在 beamer-template中,否则footnote出现错误
+
+
+% ---------------------------------Table------------------------------
+\usepackage{booktabs}
+\usepackage{array}                         % 提供表格中每一列的宽度及位置支持
+\usepackage{multirow}
+\usepackage{rotating}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+%\sloppy
+%\linespread{1.0}                           % 设置行距
+\setlength{\parindent}{22pt}
+%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+
+%% 参考文献
+\usepackage{gbt7714}
+\usepackage{natbib}
+\setlength{\bibsep}{2pt}
+
+
+\usepackage[utf8]{inputenc}
+% Package fontenc omitted
+% Package fixltx2e omitted
+\usepackage{graphicx}
+% Package longtable omitted
+% Package float omitted
+% Package wrapfig omitted
+\usepackage{soul}
+% Package textcomp omitted
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{latexsym}
+\usepackage{amssymb}
+% Package hyperref omitted
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\usepackage{tikz}
+
+						   
+\setmonofont{Consolas} % listings 中支持 consolas 字体，必需配合上面usepackage{fontenc} 中不出现[T1]才可以
+
+\lstset{numbers=left, numberstyle=\ttfamily\tiny\color{Gray}, stepnumber=1, numbersep=8pt,
+  frame=leftline,
+  framexleftmargin=0mm,
+  rulecolor=\color{CadetBlue},
+  backgroundcolor=\color{Periwinkle!20},
+  stringstyle=\color{CadetBlue},
+  flexiblecolumns=false,
+  aboveskip=5pt,
+  belowskip=0pt,
+  language=R,
+  basicstyle=\ttfamily\footnotesize,
+  columns=flexible,
+  keepspaces=true,
+  breaklines=true,
+  extendedchars=true,
+  texcl=false,  % 必须设置为false设置为true的时候 R 代码中不能含有多个注释符号 #
+  upquote=true, % 设置 引号为竖引号，但必需配合 上面 fontenc T1 使用，fontenc T1 又不能使用 consolas，所以冲突
+  showstringspaces=false,
+  keywordstyle=\bfseries,
+  keywordstyle=\color{Purple},
+  xleftmargin=20pt,
+  xrightmargin=10pt,
+  morecomment=[s]{\#}{\#},
+  commentstyle=\color{OliveGreen!60}\scriptsize,
+  tabsize=4}
+
+\tolerance=1000
+\usetheme{default}
+\setcounter{secnumdepth}{4}
+
+\usetheme{default}
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+\usecolortheme{seahorse}
+\setbeamercolor{frametitle}{fg=Blue, bg=white}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{section in toc shaded}[default][50]
+\setbeamertemplate{frametitle continuation}[from second][(续)] % 改变
+\setbeamertemplate{subsection in toc shaded}[default][20]
+\setbeamertemplate{subsection in toc}[square]
+\logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+\setbeamercovered{transparent}
+\setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+\usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+\setbeamerfont{block title}{shape=\normalfont, series=\bfseries}
+\setbeamercolor{block title}{fg=violet}
+\AtBeginSection[]
+{
+\setcounter{tocdepth}{2}
+\frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+}
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+\begin{frame}<beamer>
+\frametitle{}
+\large \tableofcontents[currentsection, sectionstyle=shaded/hide, subsectionstyle=show/shaded/hide]
+\end{frame}
+}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\everydisplay{\color{blue}}
+
+
+% ------------------------------ Title ------------------------------
+\title{\texttt{R} 软件介绍(2)：\texttt{R}的数据导入}
+
+\author{\CJKfamily{kai}金\ \ 林\\}
+\institute[中南财经政法大学]{\CJKfamily{kai}
+  \footnotesize 中南财经政法大学\\
+  统计系}
+\date{\today}
+
+\makeatletter
+\@ifpackageloaded{subfig}{}{\usepackage{subfig}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfloat]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcounter{pandoccrossref@subfigures@footnote@counter}
+\newenvironment{pandoccrossrefsubfigures}{%
+\setcounter{pandoccrossref@subfigures@footnote@counter}{0}
+\begin{figure}\centering%
+\gdef\global@pandoccrossref@subfigures@footnotes{}%
+\DeclareRobustCommand{\footnote}[1]{\footnotemark%
+\stepcounter{pandoccrossref@subfigures@footnote@counter}%
+\ifx\global@pandoccrossref@subfigures@footnotes\empty%
+\gdef\global@pandoccrossref@subfigures@footnotes{{##1}}%
+\else%
+\g@addto@macro\global@pandoccrossref@subfigures@footnotes{, {##1}}%
+\fi}}%
+{\end{figure}%
+\addtocounter{footnote}{-\value{pandoccrossref@subfigures@footnote@counter}}
+\@for\f:=\global@pandoccrossref@subfigures@footnotes\do{\stepcounter{footnote}\footnotetext{\f}}%
+\gdef\global@pandoccrossref@subfigures@footnotes{}}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+
+% ---------------------------Document Begin----------------------------
+\begin{document}
+
+
+\frame{\titlepage}
+
+\frame[shrink=5]{\frametitle{提\ \ 纲\\[0.1cm]}
+    \footnotesize{\tableofcontents}}
+
+% --------------------------- R Prapare ----------------------------
+@
+<<prepare, echo=F, results=hid>>=
+
+options(digits=4)   #小数点位数
+options(scipen=10)
+graphics.off()      # 关闭图形设备
+rm(list=ls())       # 清除对象
+library(Cairo)      # R 图形输出pdf格式中文支持
+library(mgcv)
+
+## Prepare data
+
+
+@ %def
+
+% ----------------------------- Text --------------------------------
+\CJKfamily{song}
+
+\section{数据对象的类型}
+\frame{\small \tableofcontents[currentsection]}
+
+\subsection{数据对象的属性}
+
+\begin{frame}
+  \frametitle{数据对象的属性(attributes)}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item \texttt{R} 中的任何对象都具有属性
+      \pause \item 对象属性可以分为\textit{内在属性(Intrinsic
+        attributes)}和其他属性
+      \pause \item 内在属性：模(mode)和长度(length)
+
+   \begin{enumerate}
+      \pause \item 模(mode):对象基本元素的类型，数据对象主要有4种：数
+      值(numeric), 字符(character), 复数(complex), 逻辑(logical)
+      \pause \item 长度(length):对象基本元素的个数
+    \end{enumerate}
+
+    \pause \item 其他属性：维度(dim)、类(class)
+    \pause \item 可以使用\texttt{attibutes}函数获取对象的一些属性值
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+\subsection{数据对象类型}
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{R}数据对象类型}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item 向量(Vector)：有序数据
+      \pause \item 因子(Factor)：分类数据
+      \pause \item 数组(Array)：多维有序数据
+      \pause \item 矩阵(Matrix)：二维数组
+      \pause \item 时间序列(Time series)：按时间顺序排列的数据
+      \pause \item 列表(List)：可以包含任何类型对象
+      \pause \item 数据框(Data frame)：一种特殊的列表(各组成成分长度相
+      等)
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{向量(Vector)}
+  \begin{small}
+       \begin{enumerate}
+        \pause \item   函数：\texttt{vector(mode="logical",length=0)}
+
+@
+<<echo=T, results=verbatim>>=
+vector("numeric", 10)
+@ %def
+
+       \pause \item   函数：\texttt{numeric();logical();character()}
+
+@
+<<echo=T, results=verbatim>>=
+numeric(5)
+character(3)
+@ %def
+
+\pause \item   函数：\texttt{c}，连接函数，把参数连接成一个向量
+@
+<<echo=T, results=verbatim>>=
+a <- c(1, 2, 3)
+mode(a)
+b <- c("china", "usa", "france")
+mode(b)
+@ %def
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{因子(Factor)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item R中的因子对象不仅包括分类变量的值，还包括所有分类变量所有可能的取值(levels).
+       \pause \item   可以用函数\texttt{factor}来创建一个因子对象
+
+@
+<<echo=T, results=verbatim>>=
+a <- factor(1:3)
+b <- factor(1:3,levels=1:5)
+d <- factor(1:3,labels=c("A","B","C"))
+@ %def
+
+\pause \item   函数\texttt{levels}可以提取一个因子对象的水平
+
+@
+<<echo=T, results=verbatim>>=
+b
+d
+levels(b)
+levels(d)
+@ %def
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+\frametitle{时间序列(Time series)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item   函数\texttt{ts}可以用来建立一个时间序列
+
+@
+<<echo=T, results=verbatim>>=
+ts(1:10, frequency = 4, start = c(1959, 2))
+g <- ts(1:47, frequency = 12, start = c(1959, 2))
+print(g,calendar=T)
+@ %def
+
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{数组(Array)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item   函数：\texttt{array}
+
+@
+<<echo=T, results=verbatim>>=
+array(0, dim=c(2,3,2))
+Z <- array(1:12, dim=c(2,3,2))
+dim(Z)
+@ %def
+
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{矩阵(Matrix)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item   函数matrix可以用来创立一个矩阵
+
+@
+<<echo=T, results=verbatim>>=
+matrix(1:12, nrow=2)
+matrix(1:12, nrow=2, byrow=T)
+@ %def
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{列表(List)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item   使用\texttt{list}函数
+
+@
+<<echo=T, results=verbatim>>=
+Lst <- list(name="Fred", wife="Mary", no.children=3,
+child.ages=c(4,7,9))
+Lst
+
+a <- 1:3; b <- letters[1:7];
+c(a,b); list(a,b);
+@ %def
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{数据框(Data frame)}
+  \begin{small}
+    \begin{enumerate}
+        \pause \item   函数：\texttt{data.frame}
+
+@
+<<echo=T, results=verbatim>>=
+a <- 1:4
+b <- letters[1:4]
+d <- c(TRUE, FALSE, FALSE, FALSE)
+f <- c("武大","华科","财大","华师")
+data.frame(a,b,d,f)
+@ %def
+
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\section{输入和生成数据}
+\frame{\tableofcontents[currentsection]}
+\subsection{输入数据}
+
+\begin{frame}[containsverbatim]
+  \frametitle{输入数据}
+    \begin{small}
+    \begin{enumerate}
+      \pause \item 直接输入
+@
+<<echo=T, results=verbatim>>=
+a <- c(4,16,64)
+@ %def
+      \pause \item 使用\texttt{scan}函数
+@
+<<echo=T, results=verbatim>>=
+b <- scan()
+@ %def
+
+
+
+\end{enumerate}
+  \end{small}
+  \end{frame}
+
+\subsection{导入数据}
+\begin{frame}[containsverbatim]
+  \frametitle{导入数据}
+  \begin{small}
+   \begin{enumerate}
+      \pause \item 内部数据，使用函数\texttt{data}函数查看和载入
+      \pause \item 使用函数\texttt{read.table}及其变化形式
+
+      \begin{footnotesize}
+   \begin{enumerate}
+      \pause \item 把数据格式转化为文本文件(.txt, .csv, .dat等)
+      \pause \item 找到外部文件存放位置
+      \pause \item 使用函数\texttt{read.table}读入
+      \pause \item \textcolor{red}{注意：路径中使用反斜杠}
+@
+<<echo=T, results=verbatim>>=
+gdp <- read.table(file="C:/Works/Teaching/2015年2月--统计系软件培训/data/GDP.csv", sep=",", header=T)
+gdp.csv <- read.csv(file="C:/Works/Teaching/2015年2月--统计系软件培训/data/GDP.csv", header=T)
+@ %def
+
+    \end{enumerate}
+  \end{footnotesize}
+
+  \pause \item 从剪切板粘贴数据
+
+\begin{verbatim}
+< readClipboard()  # 读入一列数据
+< read.table(file="clipboard", sep="\t")  # 读入一个表格
+\end{verbatim}
+
+  \pause \item 直接读入其他软件数据格式，使用外部包:\texttt{foreign}，\texttt{ROBDC}等包。
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\subsection{生成数据}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{生成数据}
+  \begin{small}
+
+   \begin{enumerate}
+      \pause \item 生成序列数据：使用符号\texttt{":"}或\texttt{seq}
+@
+<<echo=T, results=verbatim>>=
+1:10
+1:(10-1)
+1:10-1
+seq(from=1, to=10, by=0.5)
+@ %def
+
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{生成数据}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 生成重复数据：使用函数\texttt{rep}
+
+@
+<<echo=T, results=verbatim>>=
+rep(1, 10)
+rep(1:2, 10)
+rep(1:2, each=10)
+@ %def
+
+      \pause \item 其他生成数据函数:\texttt{gl}, \texttt{expand.grid}
+      等
+\end{enumerate}
+\end{small}
+\end{frame}
+
+\section{操作整理数据}
+
+\subsection{显示数据}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{显示数据结构}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item 显示数据的结构：使用\texttt{str}函数
+
+@
+<<echo=T, results=verbatim>>=
+str(gdp)
+@ %def
+
+    \end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{显示或修改数据}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item 打出对象名称
+
+@
+<<echo=T, results=hide>>=
+gdp
+@ %def
+
+      \pause \item 显示最开始几个数据：\texttt{head}
+
+@
+<<echo=T, results=hide>>=
+head(gdp)
+@ %def
+
+      \pause \item 显示最后几个数据:\texttt{tail}
+
+@
+<<echo=T, results=hide>>=
+tail(gdp)
+@ %def
+
+      \pause \item 调用文本编辑器修改R对象:\texttt{edit}
+
+@
+<<echo=T, results=hide>>=
+edit(gdp)
+@ %def
+
+      \pause \item 调用\texttt{edit}以表格形式修改R对象:\texttt{fix}
+
+@
+<<echo=T, results=hide>>=
+fix(gdp)
+@ %def
+
+      \pause \item 调用表格形式修改R对象:\texttt{data.entry}
+
+\begin{verbatim}
+> data.entry(gdp)
+\end{verbatim}
+
+    \end{enumerate}
+  \end{small}
+\end{frame}
+
+\subsection{子集提取}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{子集的提取}
+  \begin{small}
+   \begin{enumerate}
+     \pause \item 下标可以对对象部分内容的高效灵活选择或赋值，在对象名
+     称后面添加方括号来完成，四种类型的下标：
+        \begin{enumerate}
+          \begin{footnotesize}
+            \pause \item 正整数向量:提取对象中对应的元素
+
+@
+<<echo=T, results=hide>>=
+x <- 1:100
+x[1:10]
+gdp[1:10,1:3]
+gdp[1:10,c(2,5,8)]
+@ %def
+
+            \pause \item 负整数向量:删除对象中对应的元素
+
+@
+<<echo=T, results=hide>>=
+x[-(1:10)]
+gdp[-(1:10),1:3]
+@ %def
+            \pause \item 字符串向量:提取对象中对应名称的元素
+
+@
+<<echo=T, results=hide>>=
+gdp[c("CPI", "HR")]
+@ %def
+            \pause \item 逻辑值向量:取出满足条件的元素
+
+@
+<<echo=T, results=hide>>=
+x[x>50]
+gdp[gdp[,1]>=1978,]
+@ %def
+          \end{footnotesize}
+
+\end{enumerate}
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{子集的提取}
+  \begin{small}
+       \begin{enumerate}
+     \pause \item 对于数据框，可以使用“数据框名\$ 变量名”来得到对应
+     的列
+
+
+@
+<<echo=T, results=hide>>=
+gdp$CPI
+@ %$def
+
+\pause \item 对于列表，可以使用“列表名[[1]]”来得到对应
+的分量
+
+@
+<<echo=T, results=hide>>=
+trees[[1]]
+@ %$def
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+\section{数据对象合并、变换}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{数据对象合并}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item rbind: 行合并
+     \pause \item cbind: 列合并
+     \pause \item merge: 按关键字合并
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{数据对象变换}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item as.类函数:强制转换对象
+   \item unlist 函数: 把列表转换为数据框或者向量
+
+\end{enumerate}
+\end{small}
+\end{frame}
+  
+\section{保存数据}
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{保存数据}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 保存数据：使用\texttt{write.table}及其变化形式
+
+@
+<<echo=T, results=verbatim>>=
+a <- matrix(1:100, ncol=4)
+write.table(a, file="C:/Works/Teaching/2015年2月--统计系软件培训/results/result.csv", sep=",", row.names=F)
+write.csv(a, file="C:/Works/Teaching/2015年2月--统计系软件培训/results/result2.csv", row.names=F)
+@ %def
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+
+% ---------------------------Reference--------------------------
+%% \begin{frame}[allowframebreaks]
+%%   \frametitle{参考文献}
+%%   \footnotesize
+%%   \bibliographystyle{GBT7714-2005N}
+%%   \bibliography{thesis}
+%% \end{frame}
+
+
+\end{document}

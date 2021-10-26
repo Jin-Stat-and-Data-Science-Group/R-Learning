@@ -1,0 +1,568 @@
+\documentclass[handout,ignorenonframetext,11pt,xcolor=dvipsnames,hyperref={colorlinks,allcolors=.,urlcolor=blue, citecolor=violet, bookmarksdepth=4},aspectratio=1610]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\newcommand\hmmax{0} %% 防止Too many math alphabets used in version normal.
+\newcommand\bmmax{0} %% 防止Too many math alphabets used in version normal.
+\usepackage{lmodern,bm}   % 必需出现在amsmath等包前面，否则会出错
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+%\newif\ifbibliography
+
+%%\usepackage{natbib}
+%\bibliographystyle{plainnat}
+%
+%
+\hypersetup{
+            pdftitle={Multivariate regression and challenges in high-dimensions},
+            pdfauthor={金林},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \let\insertsectionnumber\relax
+    \let\sectionname\relax
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+\usepackage[BoldFont,SlantFont]{xeCJK}
+
+\setCJKmainfont[BoldFont=Microsoft YaHei]{SimSun}
+\setCJKsansfont[BoldFont=Microsoft YaHei Bold]{Microsoft YaHei}
+\setCJKromanfont{SimSun}
+\setCJKmonofont{SimSun}
+
+\IfFileExists{C:/Windows/Fonts/AdobeSongStd-Light.otf}{
+  \setCJKfamilyfont{song}{AdobeSongStd-Light}}{
+  \setCJKfamilyfont{song}{SimSun.ttc}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeHeitiStd-Regular.otf}{
+  \setCJKfamilyfont{hei}{AdobeHeitiStd-Regular}}{
+  \setCJKfamilyfont{hei}{SimHei.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeKaitiStd-Regular.otf}{
+  \setCJKfamilyfont{kai}{AdobeKaitiStd-Regular}}{
+  \setCJKfamilyfont{kai}{SimKai.ttf}}
+
+\IfFileExists{C:/Windows/Fonts/AdobeFangsongStd-Regular.otf}{
+  \setCJKfamilyfont{fs}{AdobeFangsongStd-Regular}}{
+  \setCJKfamilyfont{fs}{SimFang.ttf}}
+
+\author[金林]{\CJKfamily{kai}金林 \\ jinlin@zuel.edu.cn \\}
+\institute[中南财经政法大学统计与数学学院]{\normalsize\CJKfamily{kai}中南财经政法大学统计与数学学院}
+
+\date{\today}
+
+\renewcommand{\contentsname}{\centerline{\textcolor{violet}{目 \ \ 录}}}    % 将Contents改为目录
+\renewcommand{\abstractname}{摘 \ \ 要}      % 将Abstract改为摘要
+\renewcommand{\refname}{参考文献}            % 将Reference改为参考文献
+\renewcommand\tablename{表}
+\renewcommand\figurename{图}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{colorlinks=true,citecolor=blue, urlcolor=blue, linkcolor=violet, bookmarksdepth=4,bookmarksopen=true,bookmarksopenlevel=2}{hyperref}
+
+\usepackage{lscape}
+\usepackage{indentfirst}
+\usepackage{textcomp}                      % provide many text symbols
+% \usepackage{setspace}                    % 各种间距设置 %% 不能出现在 beamer-template中,否则footnote出现错误
+
+
+% ---------------------------------Table------------------------------
+\usepackage{booktabs}
+\usepackage{array}                         % 提供表格中每一列的宽度及位置支持
+\usepackage{multirow}
+\usepackage{rotating}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+%\sloppy
+%\linespread{1.0}                           % 设置行距
+\setlength{\parindent}{22pt}
+%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+
+%% 参考文献
+\usepackage{gbt7714}
+\usepackage{natbib}
+\setlength{\bibsep}{2pt}
+
+
+\usepackage[utf8]{inputenc}
+% Package fontenc omitted
+% Package fixltx2e omitted
+\usepackage{graphicx}
+% Package longtable omitted
+% Package float omitted
+% Package wrapfig omitted
+\usepackage{soul}
+% Package textcomp omitted
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{latexsym}
+\usepackage{amssymb}
+% Package hyperref omitted
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\usepackage{tikz}
+
+						   
+\setmonofont{Consolas} % listings 中支持 consolas 字体，必需配合上面usepackage{fontenc} 中不出现[T1]才可以
+
+\lstset{numbers=left, numberstyle=\ttfamily\tiny\color{Gray}, stepnumber=1, numbersep=8pt,
+  frame=leftline,
+  framexleftmargin=0mm,
+  rulecolor=\color{CadetBlue},
+  backgroundcolor=\color{Periwinkle!20},
+  stringstyle=\color{CadetBlue},
+  flexiblecolumns=false,
+  aboveskip=5pt,
+  belowskip=0pt,
+  language=R,
+  basicstyle=\ttfamily\footnotesize,
+  columns=flexible,
+  keepspaces=true,
+  breaklines=true,
+  extendedchars=true,
+  texcl=false,  % 必须设置为false设置为true的时候 R 代码中不能含有多个注释符号 #
+  upquote=true, % 设置 引号为竖引号，但必需配合 上面 fontenc T1 使用，fontenc T1 又不能使用 consolas，所以冲突
+  showstringspaces=false,
+  keywordstyle=\bfseries,
+  keywordstyle=\color{Purple},
+  xleftmargin=20pt,
+  xrightmargin=10pt,
+  morecomment=[s]{\#}{\#},
+  commentstyle=\color{OliveGreen!60}\scriptsize,
+  tabsize=4}
+
+\tolerance=1000
+\usetheme{default}
+\setcounter{secnumdepth}{4}
+
+\usetheme{default}
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+\usecolortheme{seahorse}
+\setbeamercolor{frametitle}{fg=Blue, bg=white}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{section in toc shaded}[default][50]
+\setbeamertemplate{frametitle continuation}[from second][(续)] % 改变
+\setbeamertemplate{subsection in toc shaded}[default][20]
+\setbeamertemplate{subsection in toc}[square]
+\logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+\setbeamercovered{transparent}
+\setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+\usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+\setbeamerfont{block title}{shape=\normalfont, series=\bfseries}
+\setbeamercolor{block title}{fg=violet}
+\AtBeginSection[]
+{
+\setcounter{tocdepth}{2}
+\frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+}
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+\begin{frame}<beamer>
+\frametitle{}
+\large \tableofcontents[currentsection, sectionstyle=shaded/hide, subsectionstyle=show/shaded/hide]
+\end{frame}
+}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\everydisplay{\color{blue}}
+
+
+% ------------------------------ Title ------------------------------
+\title{\texttt{R} 软件介绍(6)：\texttt{R}的统计分析}
+
+\author{\CJKfamily{kai}金\ \ 林\\}
+\institute[中南财经政法大学]{\CJKfamily{kai}
+  \footnotesize 中南财经政法大学\\
+  统计系}
+\date{\today}
+
+\makeatletter
+\@ifpackageloaded{subfig}{}{\usepackage{subfig}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfloat]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcounter{pandoccrossref@subfigures@footnote@counter}
+\newenvironment{pandoccrossrefsubfigures}{%
+\setcounter{pandoccrossref@subfigures@footnote@counter}{0}
+\begin{figure}\centering%
+\gdef\global@pandoccrossref@subfigures@footnotes{}%
+\DeclareRobustCommand{\footnote}[1]{\footnotemark%
+\stepcounter{pandoccrossref@subfigures@footnote@counter}%
+\ifx\global@pandoccrossref@subfigures@footnotes\empty%
+\gdef\global@pandoccrossref@subfigures@footnotes{{##1}}%
+\else%
+\g@addto@macro\global@pandoccrossref@subfigures@footnotes{, {##1}}%
+\fi}}%
+{\end{figure}%
+\addtocounter{footnote}{-\value{pandoccrossref@subfigures@footnote@counter}}
+\@for\f:=\global@pandoccrossref@subfigures@footnotes\do{\stepcounter{footnote}\footnotetext{\f}}%
+\gdef\global@pandoccrossref@subfigures@footnotes{}}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+
+% ---------------------------Document Begin----------------------------
+\begin{document}
+
+
+\frame{\titlepage}
+
+\frame[shrink=5]{\frametitle{提\ \ 纲\\[0.1cm]}
+    \footnotesize{\tableofcontents}}
+
+% --------------------------- R Prapare ----------------------------
+@
+<<prepare, echo=F, results=hid>>=
+
+options(digits=4)   #小数点位数
+options(scipen=10)
+graphics.off()      # 关闭图形设备
+rm(list=ls())       # 清除对象
+library(Cairo)      # R 图形输出pdf格式中文支持
+
+## Prepare data
+
+
+@ %def
+
+% ----------------------------- Text --------------------------------
+\CJKfamily{song}
+
+\section{模型定义：公式( formulae)}
+\frame{\small \tableofcontents[currentsection]}
+
+\subsection{公式( formulae)}
+
+\begin{frame}
+  \frametitle{\texttt{R} 中的模型定义：公式( formulae)}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item 统计模型一般用公式表示
+      \pause \item 书籍论文中的公式
+      \pause \item \texttt{R} 中有自己独特的统计模型表示方法：公式(
+      formulae)
+    \pause \item 主要从易于输入角度考虑的
+    \pause \item 是\texttt{R} 中统计分析的关键因素，对于统计分析函数几
+    乎通用
+\end{enumerate}
+  \end{small}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{R} 中的公式形式}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item 公式一般具有以下形式：
+\begin{verbatim}
+                 y ~ model
+\end{verbatim}
+      \pause \item \texttt{y}是因变量
+      \pause \item \verb+ ~ + 用于定义\texttt{R}中的公式
+      \pause \item \texttt{model}是由运算符连接自变量名称组成，不包括
+      系数，系数是隐含的
+      \pause \item 公式中的运算符与计算中的运算符涵义不同
+      \pause \item 例：公式
+\begin{verbatim}
+                 y ~ x1 + x2
+\end{verbatim}
+表示线性回归模型$y=\beta_{0} + \beta_{1} x_{1} + \beta_{2}x_{2}+\epsilon$，而不
+是模型$y=\beta_{0} + \beta_{1} (x_{1} + x_{2})+\epsilon$
+    \end{enumerate}
+  \end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{常见公式形式}
+  \begin{small}
+    \begin{enumerate}
+      \pause \item \verb|y ~ x1+x2| 普通模型
+      \pause \item \verb|y ~ 0+x1+x2 或 y ~ -1+x1+x2|
+      不带截距项的模型
+      \pause \item \verb|y ~ x1:x2| 带有交互效应的模型
+      \pause \item \verb|y ~ x1*x2| 等价于\verb|y ~ x1+x2+x1:x2|
+      \pause \item \verb|y ~ (x1+x2+x3)^2| 等价于
+\begin{verbatim}
+                 y ~ x1+x2+x3+x1:x2+x1:x3+x2:x3
+\end{verbatim}
+      \pause \item \verb|y ~ (x1+x2+x3)^2-x2:x3| 等价于
+\begin{verbatim}
+                 y ~ x1+x2+x3+x1:x2+x1:x3
+\end{verbatim}
+    \end{enumerate}
+  \end{small}
+\end{frame}
+
+\section{例子：线性回归分析}
+\frame{\tableofcontents[currentsection]}
+\subsection{数据}
+
+\begin{frame}[containsverbatim]
+  \frametitle{数据说明}
+    \begin{small}
+    \begin{enumerate}
+      \pause \item 研究目的：中国民航客运量的影响因素
+      \pause \item \texttt{y} 表示因变量：民航客运量(万人)
+      \pause \item \texttt{x1} 表示：国民收入(亿元)
+      \pause \item \texttt{x2} 表示：消费额(亿元)
+      \pause \item \texttt{x3} 表示：铁路客运量(万人)
+      \pause \item \texttt{x4} 表示：民航航线里程(万千米)
+      \pause \item \texttt{x5} 表示：来华旅游入境人数(万人)
+      \pause \item 数据来源：《1994年中国统计摘要》
+
+\end{enumerate}
+  \end{small}
+  \end{frame}
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{导入并查看数据}
+  \begin{small}
+   \begin{enumerate}
+      \pause \item 导入数据
+@
+<<echo=T, results=verbatim>>=
+air <- read.csv(file= "../data/air.csv" , header=T)  # 读入数据
+@ %def
+
+      \pause \item 查看数据
+@
+<<echo=T, results=hide>>=
+str(air)   # 查看数据结构
+head(air)  # 查看开始的数据
+tail(air)  # 查看结尾的数据
+fix(air)   # 用表格形式查看数据
+@ %def
+
+      \pause \item 描述统计
+@
+<<echo=T, results=hide>>=
+summary(air)  # 基本统计量
+cor(air)      # 相关系数矩阵
+plot(air)     # 点阵相关图
+@ %def
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+\subsection{建立线性回归模型}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{建立线性回归模型}
+  \begin{small}
+
+   \begin{enumerate}
+     \pause \item 理论模型：
+     \begin{equation*}
+       y = \beta_{0} + \beta_{1}x_{1} + \beta_{2}x_{2} +
+       \beta_{3}x_{3} + \beta_{4}x_{4} + \beta_{5}x_{5} + \epsilon
+     \end{equation*}
+      \pause \item \texttt{R}公式：
+\begin{verbatim}
+                  y ~ x1+x2+x3+x4+x5
+\end{verbatim}
+      \pause \item 使用\texttt{stats}包中的\texttt{lm}函数，使用格式为：
+\begin{verbatim}
+         fitted.model <- lm(formula, data = data.frame)
+\end{verbatim}
+      \pause \item 我们的例子使用
+@
+<<echo=T, results=verbatim>>=
+fm1 <- lm(y ~ x1+x2+x3+x4+x5, data=air)
+@ %def
+
+\end{enumerate}
+
+  \end{small}
+\end{frame}
+
+
+\section{提取分析结果：泛型函数}
+\frame{\tableofcontents[currentsection]}
+\subsection{泛型函数}
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{泛型函数(generic function)}
+  \begin{small}
+   \begin{enumerate}
+     \pause \item 拟合的统计模型的结果保存在对象之中
+     \pause \item 需要函数来提取具体结果
+     \pause \item 不同统计模型得到的结果对象类型不同，一般\textrm{R}
+     统计函数得到的结果对象具有与函数名称相同的类型
+     \pause \item 尽管对象类型不同，但可以使用相同的函数来提取信息
+     \pause \item 根据使用的对象不同，从而得到不同结果的函数称为\textbf{泛型函
+     数(generic function)}
+   \pause \item 例:\texttt{summary} 函数
+@
+<<echo=T, results=hide>>=
+summary(air)   # air 类型为数据框("data.frame")
+summary(fm1)   # fm1 类型为线性模型("lm")
+@ %def
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{提取模型结果常用泛型函数}
+  \begin{small}
+   \begin{enumerate}
+     \pause \item \texttt{summary}： 给出模型结果的详细概述
+     \pause \item \texttt{print}：给出模型结果的简要概述
+     \pause \item \texttt{coef}：给出模型参数估计值
+     \pause \item \texttt{residuals}：给出模型的残差
+     \pause \item \texttt{fitted}：给出模型的拟合值
+     \pause \item \texttt{predict}：给出模型的预测值
+     \pause \item 例：
+@
+<<echo=T, results=hide>>=
+summary(fm1)
+coef(fm1)
+residuals(fm1)
+fitted(fm1)
+new <- data.frame(30000, 20000, 100000, 100, 5000)
+names(new) <- c("x1", "x2","x3","x4","x5")
+predict(fm1, new)
+@ %def
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+
+\subsection{直接提取}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{直接从结果对象提取信息}
+  \begin{small}
+   \begin{enumerate}
+     \pause \item 结果对象的类型一般为列表(List)
+     \pause \item 可以使用数据对象类型的获取子集的方法来提取信息
+     \pause \item 例：
+@
+<<echo=T, results=hide>>=
+fm1
+str(fm1)
+fm1$coefficients
+fm1$df.residual
+str(summary(fm1))
+summary(fm1)$coefficients
+fm1.coef <- summary(fm1)$coefficients
+@ %def
+
+     \pause \item 保存结果
+@
+<<echo=T, results=hide>>=
+fm1.coef <- summary(fm1)$coefficients
+write.csv(fm1.coef, file="./fm1.coef.csv", row.names=T)
+@ %def
+
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+\section{高级统计模型}
+\frame{\tableofcontents[currentsection]}
+
+\subsection{高级统计模型}
+\begin{frame}[containsverbatim, fragile]
+  \frametitle{常见高级统计模型在R中的实现}
+  \begin{small}
+
+    \begin{enumerate}
+     \pause \item 时间序列分析:\texttt{stats}包中的\texttt{arima}函数
+     \pause \item 非线性回归模型:\texttt{stats}包中的\texttt{nls}函数
+     \pause \item 广义线性模型:\texttt{stats}包中的\texttt{glm}函数
+     \pause \item 混合效应模型:\texttt{nlme}包中的\texttt{lme}函数
+     \pause \item 可加模型:\texttt{mgcv}包中的\texttt{gam}函数
+     \pause \item 生存分析:\texttt{survival}包中的\texttt{survfit}函数
+
+
+\end{enumerate}
+\end{small}
+\end{frame}
+
+
+% ---------------------------Reference--------------------------
+%% \begin{frame}[allowframebreaks]
+%%   \frametitle{参考文献}
+%%   \footnotesize
+%%   \bibliographystyle{GBT7714-2005N}
+%%   \bibliography{thesis}
+%% \end{frame}
+
+\end{document}

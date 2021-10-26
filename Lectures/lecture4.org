@@ -1,0 +1,734 @@
+* 简介
+** 简介
+*** 例子
+    1. 尝试以下代码:
+    #+BEGIN_SRC R :results value code :exports code
+      demo(graphics)
+      demo(persp)
+      library(lattice)
+      demo(lattice)
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC R
+    TRUE	FALSE
+    #+END_SRC
+
+
+*** 命令种类
+    1. 高级绘图命令
+       - 在图形设备上产生一个新的图区，它可能包括坐标轴，标签，标题等等
+    2. 低级绘图命令
+       - 在一个已经存在的图上加上更多的图形元素，如额外的点，线和标签
+    3. 图形参数
+       - 图形参数可以被修改从而定制图形环境
+    4. 网格作图命令
+       - 使用 =grid= 和 =lattice= 进行面板作图
+    5. 图形设备管理命令
+       - 通过设备管理命令来保存 ~R~ 图形
+
+* 高级绘图命令
+** =plot= 函数
+*** =plot= 函数使用方法
+    1. 是 ~R~ 里面最常用的一个图形函数
+    2. 是一个泛型函数：产生的图形依赖于第一个参数的类型或者类
+    3. 使用方法
+       1. =plot(x)= :以 $x$ 的元素值为纵坐标、以序号为横坐标绘图
+       2. =plot(x,y)= : $x$ (在 $x$ -轴上)与 $y$ (在 $y$ -轴上)的二元作图
+       3. =plot(y~x)= : $x$ (在 $x$ -轴上)与 $y$ (在 $y$ -轴上)的二元作图
+       4. =plot(DF)= : 矩阵散点图
+*** =plot= 函数选项
+#+ATTR_LATEX: :font \ttfamily\footnotesize
+    |--------------+--------------------------------------------------|
+    | 参数         | 作用                                             |
+    |--------------+--------------------------------------------------|
+    | add=F        | 如果是 TRUE ，叠加图形到前一个图上（如果有的话） |
+    | axes=T       | 如果是 FALSE ，不绘制轴与边框                    |
+    | type= "p"    | 指定图形的类型，"p": 点，"l": 线，               |
+    |              | "b": 点连线，"o": 同上，但是线在点上             |
+    | xlim=, ylim= | 指定轴的上下限，例如 xlim=c(1, 10)               |
+    | xlab=, ylab= | 坐标轴的标签，必须是字符型值                     |
+    | main=, sub=  | 指定主标题和副标题，必须是字符型值               |
+    |--------------+--------------------------------------------------|
+
+
+*** =plot= 函数例子
+
+
+
+    #+BEGIN_SRC R :session
+      plot(1:10)
+      a <- 1:10
+      b <- 11:20
+      plot(a,b)
+      plot(b~a)
+      A <- matrix(1:20, nrow=10)
+      plot(A)
+      plot(1:10, type="l")
+      plot(b~a, type="o", xlim=c(0,12), ylim=c(0,22),
+           xlab="x轴", ylab="y轴")
+      GDPdata <- read.csv(file="../data/GDP.csv")
+      str(GDPdata) # 查看 GDPdata 的结构
+      plot(GDPdata[, c("GDP", "Labor", "Kapital", "Technology")])
+    #+END_SRC
+
+    #+RESULTS:
+
+** =hist= 函数
+*** =hist= 函数
+    1. $x$ 的频率直方图
+    2. 例子
+
+    #+BEGIN_SRC R :session :results output graphics :exports code :file hist.pdf :width 7 :height 5
+         # Make some sample dat
+         x <- rnorm(100)
+                  # Calculate and plot the two histograms
+         hcum <- h <- hist(x, plot=FALSE)
+         hcum$counts <- cumsum(hcum$counts)
+         plot(hcum, main="")
+         plot(h, add=T, col="grey")
+         # Plot the density and cumulative density
+         d <- density(x)
+         lines(x = d$x, y = d$y * length(x) * diff(h$breaks)[1], lwd = 1, col="red")
+         lines(x = d$x, y = cumsum(d$y)/max(cumsum(d$y)) * length(x), lwd = 1, col="blue")
+    #+END_SRC
+
+    #+RESULTS:
+    [[file:hist.pdf]]
+
+*** =hist= 例子图形
+    [[./hist.pdf]]
+
+** =pairs= 函数
+*** =pairs= 函数
+    1. 作多个变量的散点图矩阵.
+    2. 参数为数据框对象.
+
+    3. 效果与 =plot= 函数使用数据框参数效果相同
+
+       #+BEGIN_SRC R :session
+         pairs(GDPdata[, c("GDPRealRate", "Labor", "KR", "Technology", "CPI")])
+         plot(GDPdata[, c("GDPRealRate", "Labor", "KR", "Technology", "CPI")])
+         dev.off()
+
+       #+END_SRC
+
+       #+RESULTS:
+       : 1
+
+
+*** =pairs= 函数： =panel= 参数
+    1. 默认散点图矩阵存在的问题：空间比较浪费，没有揭示更多内容
+       1. 矩阵图中上三角和下三角的内容雷同
+       2. 矩阵对角线只有变量的名称
+    2. 解决方法：使用 =panel= 参数ui:
+       1. =panel= 定义每个矩阵元素图中的图形，默认为散点图
+       2. =lower.panel= 定义下三角矩阵的图形，默认为散点图
+       3. =upper.panel= 定义上三角矩阵的图形，默认为散点图
+       4. =diag.panel= 定义对角线的图形，默认为不绘制图形
+    3. 上面几个 =panel= 参数应设置为作图函数，可以为已有的作图函数，也可以自己定
+       义。
+*** =pairs= 函数例子
+#+LaTeX:\lstset{basicstyle=\ttfamily\scriptsize}
+    #+BEGIN_SRC R :session  :results output graphics :exports code :file pairs.pdf :width 10 :height 7
+      panel.hist <- function(x, ...)
+      {   usr <- par("usr"); on.exit(par(usr))
+          par(usr = c(usr[1:2], 0, 1.5) )
+          h <- hist(x, plot = FALSE)
+          breaks <- h$breaks; nB <- length(breaks)
+          y <- h$counts; y <- y/max(y)
+          rect(breaks[-nB], 0, breaks[-1], y, col="blue", ...)}
+
+      panel.cor <- function(x, y, digits=2, cex.cor)
+      {   usr <- par("usr"); on.exit(par(usr))
+          par(usr = c(0, 1, 0, 1))
+          r <- cor(x, y, use="complete.obs"); r1 <- abs(r)
+          txt <- format(c(r, 0.123456789), digits=digits)[1]
+          if(missing(cex.cor)) cex <- 0.8/strwidth(txt)
+          text(0.5, 0.5, txt, cex = cex*(r1+1)/5)}
+
+      pairs(GDPdata[, c("GDPRealRate", "Labor", "KR", "Technology", "CPI")],
+            diag.panel=panel.hist,
+            upper.panel=panel.smooth,
+            lower.panel=panel.cor)
+    #+END_SRC
+
+    #+RESULTS:
+    [[file:pairs.pdf]]
+*** =pairs= 例子图形
+    [[./pairs.pdf]]
+
+** =coplot= 函数
+*** =coplot= 函数
+    1. =coplot= 用于条件作图，可以用来表明3个或4个变量之间的关系。
+    2. 用法可以分为三类：
+       1. 条件变量为分类变量
+       2. 条件变量为连续变量
+       3. 条件变量为两个变量
+
+*** =coplot= 作图：条件变量为分类变量
+    1. 代码：
+    #+BEGIN_SRC R :session :results none :exports code
+      period <- cut(GDPdata$Year,
+                    breaks=c(1951,1966,1978,2010),
+                    labels=c("文革前","文革中","文革后"),
+                    dig.lab=4)
+      GDPdata <- cbind(GDPdata, period)
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|period, data=GDPdata,
+             xlab="资本增长率", ylab="GDP增长率")
+    #+END_SRC
+
+
+    #+BEGIN_SRC R :session :exports none
+      graphics.off()
+    #+END_SRC
+
+    #+RESULTS:
+
+    #+BEGIN_SRC R :session :results none :exports none
+      library("Cairo")
+      CairoPDF(file="coplot1.pdf", width=9, height=6)
+      par(family="simhei")
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|period, data=GDPdata,
+             xlab="资本增长率", ylab="GDP增长率")
+      dev.off()
+    #+END_SRC
+
+
+
+*** =coplot= 作图：条件变量为分类变量作图结果
+    [[./coplot1.pdf]]
+
+*** =coplot= 作图：条件变量为连续变量
+    1. 代码：
+    #+BEGIN_SRC R :session :results none :exports none
+      CairoPDF(file="coplot2.pdf", width=9, height=6)
+      par(family="simhei")
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|I(CPI-1), data=GDPdata,
+             xlab="资本增长率", ylab="GDP增长率")
+      dev.off()
+    #+END_SRC
+
+    #+BEGIN_SRC R :session :results none :exports code
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|I(CPI-1), data=GDPdata,
+             xlab="资本增长率", ylab="GDP增长率")
+    #+END_SRC
+
+#+BEGIN_CENTER
+    [[./coplot2.pdf]]
+#+END_CENTER
+
+*** =coplot= 作图：条件变量为两个变量
+    #+BEGIN_SRC R :session :results none
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|I(CPI-1)*period,
+             data=GDPdata, number=4,
+             xlab="资本增长率", ylab="GDP增长率")
+    #+END_SRC
+
+    #+BEGIN_SRC R :session :results none :exports none
+      graphics.off()
+      CairoPDF(file="coplot3.pdf", width=8, height=6)
+      par(family="Microsoft Yahei")
+      coplot(I(GDPRealRate-1) ~ I(KR-1)|period*I(CPI-1),
+             data=GDPdata, number=4,
+             xlab="资本增长率", ylab="GDP增长率")
+      dev.off()
+    #+END_SRC
+#+BEGIN_CENTER
+[[./coplot3.pdf]]
+#+END_CENTER
+
+** 其他常见高级函数
+*** 其他常见高级函数
+#+ATTR_LATEX: :font \ttfamily\footnotesize
+    |----------------+-------------------------------|
+    | 函数           | 用途                          |
+    |----------------+-------------------------------|
+    | curve(f(x))    | 作函数 $f(x)$ 的曲线           |
+    | pie(x)         | 饼图                          |
+    | boxplot(x)     | 箱线图                        |
+    | barplot(x)     | 条形图                        |
+    | qqnorm(x)      | 正态分位数－分位数图          |
+    | qqplot(x, y)   | $y$ 对 $x$ 的分位数－分位数图 |
+    | persp(x, y, z) | 透视图                        |
+    |----------------+-------------------------------|
+
+* 低级绘图函数
+** 常见低级函数
+*** 常见低级函数及其用法
+#+ATTR_LATEX: :font \ttfamily\footnotesize
+    |-----------------------+--------------------------------------|
+    | 函数                  | 用途                                 |
+    |-----------------------+--------------------------------------|
+    | points(x, y)          | 添加点                               |
+    | lines(x, y)           | 添加线                               |
+    | segments(x1,y1,x2,y2) | 添加从(x1, y1) 到(x2, y2)的线段      |
+    | rect(x1,y1,x2,y2)     | 以点(x1,y1)，(x2,y2)为对角顶点的矩形 |
+    | abline(a,b)           | 添加截距为 a，斜率为 b 的直线        |
+    | abline(h=y)           | 在纵坐标y处画水平线                  |
+    | abline(v=x)           | 在横坐标x处画垂直线                  |
+    | abline(lm.obj)        | 画由lm.obj对象确定的回归线           |
+    | text(x,y, labels)     | 在(x,y)处添加用labels指定的文字      |
+    | legend(x,y, legend)   | 在(x,y)处添加图例，图例由legend给定  |
+    | rug(x)                | 在x轴上用断线画出x数据的位置         |
+    |-----------------------+--------------------------------------|
+
+*** 低级函数的例子
+    #+BEGIN_SRC R
+      x <- rnorm(100)
+      plot(x, ylim=c(-3,3))
+      points(50, 2, pch=10)
+      points(90, -1, pch=13)
+      y <- 1:100
+      z <- seq(-1, 1,length=100) + rnorm(100, sd=0.16)
+      lines(y,z, col="red")
+      segments(50, 2, 90, -1)
+      rect(50, 2, 90, -1)
+      abline(2, (-1-2)/(90-50))
+      abline(lm(z~y), lty=2, col="blue")
+      text(70, 2.3, "矩形")
+      text(15, 2, expression(y==alpha+beta*x))
+      legend(80, -2, legend=c("曲线图", "回归线"),
+             lty=c(1,2), col=c("red", "blue"))
+      rug(y)
+    #+END_SRC
+
+* 图形参数
+** 图形参数
+*** 图形参数和 =par= 函数
+    1. 图形的显示可以用绘图参数来改良。
+    2. 部分绘图参数可以作为图形函数的选项
+    3. 也可以用函数 =par= 来永久地改变绘图参数，也就是说后来的图形都将按照 =par=
+       指定的参数来绘制。
+    4. 例如：使用命令 \\
+       ~> par(bg="yellow")~ \\
+       将导致后面所有的图形都以黄色背景来绘制。
+    5. 一共有70多个绘图参数，可以使用 ~?par~ 来查看这些参数
+
+*** 常用图形参数
+
+   #+CAPTION: 常用的图形参数
+   #+LABEL: table:fun
+   #+ATTR_LATEX: :font \ttfamily\scriptsize :align C{1.5cm}m{9cm}
+    |-------+--------------------------------------------------------------------------------------------------------------|
+    | 参数  | 用途                                                                                                         |
+    |-------+--------------------------------------------------------------------------------------------------------------|
+    | bg    | 设置图形背景颜色                                                                                             |
+    | bty   | 控制图形边框形状，可用的值为: "o", "l", "7", "c", "u" 和"]"（边框和字符的外表相像）；如果bty="n"则不绘制边框 |
+    | cex   | 控制默认状态下符号和文字大小的值                                                                             |
+    | col   | 控制符号的颜色，颜色名称可以通过 colors()函数查看                                                            |
+    | font  | 控制文字字体的整数（1: 正常，2: 斜体，3: 粗体，4: 粗斜体）                                                   |
+    | lty   | 控制连线的线型，可以是整数 （1:实线，2:虚线，3:点线，4:点虚线，5:长虚线，6:双虚线）                          |
+    | lwd   | 控制连线宽度的数字                                                                                           |
+    | mar   | 控制图形边空的有4个值的向量c(bottom, left, top, right)，默认值为c(5.1, 4.1, 4.1, 2.1)                        |
+    | mfcol | c(nr,nc)的向量，分割绘图窗口为nr行nc列的矩阵布局，按列次序使用各子窗口                                       |
+    | mfrow | 同上，但是按行次序使用各子窗口                                                                               |
+    | pch   | 控制符号的类型，可以是1到25的整数，也可以是具体字符                                                          |
+    |-------+--------------------------------------------------------------------------------------------------------------|
+
+*** =pch= 参数数字具体代表的绘图符号
+
+    #+BEGIN_SRC R :results output graphics :exports both :file pch.pdf :width 7 :height 5
+      plot(expand.grid(1:5, 5:1), pch=1:25, ylim=c(0.9,5.5),
+           axes=F, xlab="", ylab="",
+           col="blue", bg="yellow", cex=1.5)
+      text(expand.grid(1:5, 5:1+0.4), as.character(1:25))
+    #+END_SRC
+
+*** 例子1: 在 =plot= 函数中使用绘图参数
+
+    #+BEGIN_SRC R :session
+      x <- rnorm(10)
+      y <- rnorm(10)
+      plot(x, y)
+      plot(x, y, xlab="Ten random values", ylab="Ten other values",
+      xlim=c(-2, 2), ylim=c(-2, 2), pch=22, col="red",
+      bg="yellow", bty="l", tcl=0.4,
+      main="How to customize a plot with R", las=1, cex=1.5)
+    #+END_SRC
+
+*** 例子2: 利用 =par= 函数控制绘图参数
+
+    #+BEGIN_SRC R :session
+      opar <- par()
+      par(bg="lightgray", mar=c(2.5, 1.5, 2.5, 0.25))
+      plot(x, y, type="n", xlab="", ylab="", xlim=c(-2, 2),
+      ylim=c(-2, 2), xaxt="n", yaxt="n")
+      rect(-3, -3, 3, 3, col="cornsilk")
+      points(x, y, pch=10, col="red", cex=2)
+      axis(side=1, c(-2, 0, 2), tcl=-0.2, labels=FALSE)
+      axis(side=2, -1:1, tcl=-0.2, labels=FALSE)
+      title("How to customize a plot with R (ter)",
+      font.main=4, adj=1, cex.main=1)
+      mtext("Ten random values", side=1, line=1, at=1, cex=0.9, font=3)
+      mtext("Ten other values", line=0.5, at=-1.8, cex=0.9, font=3)
+      mtext(c(-2, 0, 2), side=1, las=1, at=c(-2, 0, 2), line=0.3,
+      col="blue", cex=0.9)
+      mtext(-1:1, side=2, las=1, at=-1:1, line=0.2, col="blue", cex=0.9)
+      par(opar)
+    #+END_SRC
+
+* 网格作图
+** 图形分割
+*** 网格作图简介
+**** 
+       1. 什么是网格作图： 在一个大图形中包含多个子图形
+       2. 为什么要进行网格作图： 显示更多的信息，对比图形等
+       3. 一些高级作图命令得到的图形就是网格图，其中包含多个小图
+       4. 例如前面的 =pairs= 和 =coplot= 函数的图形
+       5. 但我们需要更灵活的方法进行网格作图
+*** 例
+
+     #+BEGIN_SRC R
+       mtcars  # 使用 mtcars 数据集展示下面的例子
+
+       plot(mtcars$wt, mtcars$mpg) # 所有数据的散点图
+       plot(mtcars[mtcars$cyl==4, ]$wt, mtcars[mtcars$cyl==4, ]$mpg) # 4缸汽车的散点图
+       plot(mtcars[mtcars$cyl==6, ]$wt, mtcars[mtcars$cyl==6, ]$mpg) # 6缸汽车的散点图
+       plot(mtcars[mtcars$cyl==8, ]$wt, mtcars[mtcars$cyl==8, ]$mpg) # 8缸汽车的散点图
+
+       coplot(mpg~wt|as.factor(cyl), data=mtcars)  # 同时画出4，6，8缸发动机的散点图
+
+     #+END_SRC
+
+     #+RESULTS:
+
+#+BEGIN_SRC R :session :results output graphics :exports none :file coplot-exam.pdf :width 7 :height 4.5
+       coplot(mpg~wt|as.factor(cyl), data=mtcars)  # 同时画出4，6，8缸发动机的散点图
+
+     #+END_SRC
+
+#+RESULTS:
+[[file:coplot-exam.pdf]]
+
+
+   -  *问题： 我们能不能把4个子图形放入同一个大图形中？*
+***  coplot 图形结果
+      [[./coplot-exam.pdf]]
+*** 网格作图的一般方法：图形分割
+**** 对图形分割有三类方法：
+	       1. 使用作图参数设置
+       	       2. 使用分割函数
+	       3. 使用网格作图包
+** 使用图形参数进行图形分割
+*** =mfrow= 和 =mfcol= 参数
+**** 
+       1. =mfrow= 参数按照 =c(nr,nc)= 的向量，分割绘图窗口为 $nr$ 行 $nc$ 列的矩阵布局，按
+       	  *行* 次序使用各子窗
+       2. =mfcol= 参数按照 =c(nr,nc)= 的向量，分割绘图窗口为 $nr$ 行 $nc$ 列的矩阵布局，按
+       	  *列* 次序使用各子窗口
+
+*** 例子：
+
+       	    #+BEGIN_SRC R
+              x <- rnorm(100)
+              y <- rchisq(100, df=10)
+              par(mfrow=c(2,2))  # 把整个图形画板分割为2行2列
+              plot(x,y, col="red")
+              boxplot(x)
+              boxplot(y)
+              plot(x,log(y), col="blue")
+              par(mfrow=c(1,1)) # 还原设置
+       	    #+END_SRC
+
+       	    - *用 =mfrow= 参数解决前面提出的问题：把4个子图形放入同一个大图形中*
+
+*** 解决问题的结果
+#+BEGIN_SRC R  :session :results output graphics :exports none :file s4.pdf :width 7 :height 4.4
+       par(mfrow=c(2,2))
+       par(mar=c(4.1,4.1,0.9,2.1))
+       plot(mtcars$wt, mtcars$mpg) # 所有数据的散点图
+       plot(mtcars[mtcars$cyl==4, ]$wt, mtcars[mtcars$cyl==4, ]$mpg, col="blue", xlab="wt", ylab="cyl=4,mpg") # 4缸汽车的散点图
+       plot(mtcars[mtcars$cyl==6, ]$wt, mtcars[mtcars$cyl==6, ]$mpg, col="green", xlab="wt", ylab="cyl=6,mpg") # 6缸汽车的散点图
+       plot(mtcars[mtcars$cyl==8, ]$wt, mtcars[mtcars$cyl==8, ]$mpg, col="red", xlab="wt", ylab="cyl=8,mpg") # 8缸汽车的散点图
+       par(mfrow=c(1,1))
+     #+END_SRC
+
+#+RESULTS:
+[[file:s4.pdf]]
+
+      [[./s4.pdf]]
+** 使用函数分割图形
+*** 使用 =layout= 函数进行图形分割
+**** =layout= 函数：
+       1. 参数是元素为整数的矩阵
+       2. 把绘图页面按矩阵的形状进行分割
+       3. 元素为0的地方不可用
+       4. 元素相同的地方合并
+       5. 可以使用 =layout.show(n)= 来查看当前页面分割情况
+       6. 可以用选项 =widths= 和 =heights= 修改分割的宽和高
+
+*** =layout= 函数例子：复合图形的构建
+
+    #+BEGIN_SRC R
+      layout(matrix(1:4, nrow=2)) # 把画板平均分为2行2列，等同于 mfrow 参数
+      layout.show(4)
+      layout(matrix(0:3, nrow=2)) # 把画板分成 3块
+      layout.show(3)
+      layout(matrix(c(1:3,3), nrow=2)) # 画板分成 大小不等的3快
+      layout.show(3)
+
+      layout(matrix(c(1,0,2,3), nrow=2), widths=c(1,4), heights=c(3,1)) # 构建复合图形
+      layout.show(3)
+
+      x <- rnorm(100)
+      y <- rchisq(100, df=10)
+      boxplot(y) # 变量y的垂直箱线图
+      plot(x,y)  # x与y的散点图
+      boxplot(x, horizontal=T) # 变量x的水平箱线图
+    #+END_SRC
+
+*** 构建的复合图形
+    #+BEGIN_SRC R   :session :results output graphics :exports none :file complex.pdf :width 7 :height 4.5
+      layout(matrix(c(1,0,2,3), nrow=2), widths=c(1,4), heights=c(3,1)) # 构建复合图形
+
+      x <- rnorm(100)
+      y <- rchisq(100, df=10)
+      par(mar=c(3.8, 4.1, 1.3, 1.5))
+      boxplot(y, col="red") # 变量y的垂直箱线图
+      plot(x,y, col="green")  # x与y的散点图
+      boxplot(x, horizontal=T, col="blue") # 变量x的水平箱线图
+    #+END_SRC
+
+    #+RESULTS:
+    [[file:complex.pdf]]
+
+      [[./complex.pdf]]
+
+
+** 使用 =grid= 和 =lattice= 包
+*** =grid= 和 =lattice= 包简介
+    1. =grid= is an alternative to the traditional graphics system provided by
+       the graphics package.
+    2. =grid= provides low-level graphics functions for producing statistical
+       graphics.
+    3. =lattice= provides high-level graphics functions using =grid=.
+*** 为什么要使用 =grid= 包
+    1. =grid= began life purely as support for =lattice=.
+    2. The traditional system has some annoying constraints (e.g., text rotation in margins)
+    3. The traditional system has some annoying inconsistencies (e.g., the meaning of =col=)
+    4. As =grid= has developed, it has opened up opportunities to do some things
+       that were not conceivable with the traditional system (e.g., interactive editing)
+*** =grid= 包的作用
+    1. As a drawing program
+    2. Annotating lattice plots
+    3. Editing lattice plots
+    4. Tricky annotations of traditional plots (via =gridBase=)
+    5. Tricky arrangements of traditional plots (via =gridBase=)
+    6. Develop new graphics functions/components
+*** =grid= 包例子
+#+LaTeX:\lstset{basicstyle=\ttfamily\scriptsize}
+    #+BEGIN_SRC R
+      library("grid")
+      roofvp <- viewport(x=0.5, y=5/12, width=1/3, height=1/6,
+      just=c("centre","bottom"), clip="on")
+      pushViewport(roofvp)
+      roof <- grid.circle(x=0.5, y=0, r=0.8, gp=gpar(fill="brown"),name="roof")
+      grid.draw(roof); upViewport()
+      grid.polygon(x=c(1/3,2/3,15/24,9/24), y=c(0,0,1/2-1/12,5/12), gp=gpar(fill="grey"))
+      vp <- viewport(x=0.5, y=2/3, width=1/6, height=2/6, just= c("right","bottom"))
+      blade1 <- gTree (children= gList(rectGrob(x=c(rep(0,6), rep(0.5,6)),
+      y=c(rep(0:5/6,2)), width=1/2, height=1/6, just=c("left","bottom"),
+      gp=gpar(col="grey",lwd=3, fill="orange"),vp=vp),
+      rectGrob(gp=gpar(col="white", lwd=3), vp=vp)), name="blade1")
+      blade2 <- editGrob(blade1, vp= viewport(angle=90), name="blade2")
+      blade3 <- editGrob(blade1, vp= viewport(angle=180), name="blade3")
+      blade4 <- editGrob(blade1, vp= viewport(angle=270), name="blade4")
+      segments <- segmentsGrob(x0=c(0,0.5), y0=c(0.5,0), x1=c(1,0.5),
+      y1=c(0.5,1), gp=gpar(col="brown",lwd=10))
+      fengche <- gTree(children= gList(blade1,blade2,blade3,blade4,segments),
+      vp=viewport(angle=45), name="fengche")
+      grid.draw(fengche)
+      # We can rotate the blades as follows:
+      for (i in 1:10000) grid.edit("fengche", vp=viewport(angle=i/1))
+    #+END_SRC
+
+    #+RESULTS:
+
+*** =lattice= 包例子
+    #+BEGIN_SRC R :session
+      dgf <- read.csv("../data/dgf.csv", header=T)
+      dgf$District <- factor(dgf$District, levels=dgf$District[1:31])
+      library(lattice)
+
+      xyplot(FINNRate ~ GDPNRate | District, data=dgf,
+      layout = c(8,4), type = c("p", "g", "r", "smooth"),
+      as.table = TRUE,
+      panel=function(x, y){
+              panel.xyplot(x, y, pch=1, cex=0.7, col="blue")
+              panel.lmline(x, y, lty=1, col="green", cex=0.6)
+              panel.loess(x, y, col="red")
+      },
+      xlim = c(0,0.4), ylim = c(0, 0.5),
+      xlab="GDP增长率",ylab = "财政收入增长率")
+
+      graphics.off()
+    #+END_SRC
+
+*** =lattice= 包例子图形
+
+    #+BEGIN_SRC R :session :results none :exports none
+      pdf(file="lattice.pdf", width=10, height=6.5, family="GB1")
+      xyplot(FINNRate ~ GDPNRate | District, data=dgf,
+      layout = c(8,4), type = c("p", "g", "r", "smooth"),
+      as.table = TRUE, font=3,
+      panel=function(x, y){
+              panel.xyplot(x, y, pch=1, cex=0.5, col="blue")
+              panel.lmline(x, y, lty=1, col="green", cex=0.6)
+              panel.loess(x, y, col="red")
+      },
+      xlim = c(0,0.4), ylim = c(0, 0.5),
+      xlab="GDP增长率",ylab = "财政收入增长率")
+      dev.off()
+    #+END_SRC
+
+[[./lattice.pdf]]
+
+* 图形管理
+** 图形设备简介
+*** ~R~ 图形设备概述
+    1. ~R~ 画图默认打开一个画图窗口
+    2. 还可以把图形画在其他文件上
+    3. 把展示或保存图形的窗口或文件称为 *设备驱动(device driver)*
+    4. 可以调用设备驱动函数来启动设备驱动。
+    5. 每一种设备驱动都有对应的函数：输入 =help(Devices)= 可以得到它们的列表。
+*** ~R~ 图形设备种类
+    1. 常见的图形设备有：
+#+ATTR_LATEX: :font \ttfamily\footnotesize
+    |--------------+------------------------------------------------|
+    | 设备函数     | 说明                                           |
+    |--------------+------------------------------------------------|
+    | windows()    | 打开绘图窗口(默认设备)                         |
+    | x11()        | Unix下的绘图窗口( 在Windows下等价与windows() ) |
+    | jpeg()       | 创建 JPEG 格式图形文件(.jpg,.jpeg)             |
+    | png()        | 创建 PNG 格式图形文件(.png)                    |
+    | bmp()        | 创建 BMP 格式图形文件(.bmp)                    |
+    | postscript() | 创建 ps 格式文件保存图形                       |
+    | pdf()        | 创建pdf格式文件保存图形                        |
+    |--------------+------------------------------------------------|
+
+** 图形设备管理
+*** 图形设备管理
+    1. ~R~ 作图时有时需要同时使用几个图形设备。
+    2. 在一个时间点，只有一个图形设备可以接受图形命令，这个设备称为当前设备。
+    3. 最后打开的设备将成为当前的绘图设备，随后的所有图形都在这上面显示。
+    4. 当多个设备同时启动时，它们将形成一个以名字作为标识符的有限任务序列。
+    5. 可以使用图形设备管理命令来对图形设备进行管理。
+
+*** 常见图形设备管理命令
+    1. 常见图形设备管理命令有:
+#+ATTR_LATEX: :font \ttfamily\footnotesize
+    |----------------+--------------------------|
+    | 命令           | 说明                     |
+    |----------------+--------------------------|
+    | dev.list()     | 显示当前所有的设备列表   |
+    | dev.cur()      | 显示当前设备             |
+    | dev.set(/k/)   | 设置当前设备             |
+    | dev.next()     | 显示当前设备的下一个设备 |
+    | dev.prev()     | 显示当前设备的前一个设备 |
+    | dev.off()      | 关闭当前设备             |
+    | graphics.off() | 关闭当前所以设备         |
+    |----------------+--------------------------|
+
+*** 利用图形设备管理命令保存 ~R~ 图形
+    1. 创建图形设备时可以指定保存图形的文件
+    2. 还可以指定图形和文件的其他属性
+       #+BEGIN_SRC R
+         getwd()
+         jpeg()
+         plot(1:10, ylab="变量y")
+         dev.off()
+
+         jpeg(file="散点图.jpg", width=800, height=800)
+         par(mfrow=c(2,2))
+         plot(1:10, ylab="变量y")
+         plot(1:10, type="l")
+         plot(1:10, type="o")
+         boxplot(1:10)
+         dev.off()
+
+         pdf(family="GB1", width=9, height=6)
+         plot(1:10, ylab="变量y")
+         dev.off()
+       #+END_SRC
+* Export Configuration 					   :noexport:ARCHIVE:
+#+LATEX_CLASS_OPTIONS: [11pt,xcolor=dvipsnames,aspectratio=1610,hyperref={colorlinks,allcolors=.,urlcolor=blue,bookmarksdepth=4}]
+# +LATEX_CLASS_OPTIONS: [UTF8,a4paper,12pt]{ctexart}  % Latex 去掉上面的语句，加上本语句
+#+LaTeX_HEADER_EXTRA: % ------------------------Chapter Section Title-------------------------
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={,、}, number={\chinese{section}}, aftername={},
+#+LaTeX_HEADER_EXTRA: format={\large \heiti }, indent={24pt},
+#+LaTeX_HEADER_EXTRA: beforeskip={1ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={1ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {section}
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={(,)}, number={\chinese{subsection}}, aftername={},
+#+LaTeX_HEADER_EXTRA: format={\normalsize \bfseries \songti}, indent={\parindent},
+#+LaTeX_HEADER_EXTRA: beforeskip={0.5ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={0.5ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {subsection}
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={,.}, number={\arabic{subsubsection}},
+#+LaTeX_HEADER_EXTRA: aftername={}, format={\normalsize \bfseries \songti},indent={\parindent},
+#+LaTeX_HEADER_EXTRA: beforeskip={0ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={0.2ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {subsubsection}
+#+LaTeX_HEADER_EXTRA: % ------------------------Figure and Table Caption---------------------
+#+LaTeX_HEADER_EXTRA: \makeatletter                        % 图表标题格式设置
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@table}[1]{\small \bfseries\textcolor{Violet}{\tablename\thetable~~}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@figure}[1]{\small \CJKfamily{hei} \textcolor{Violet}{\figurename\thefigure~~}}
+#+LaTeX_HEADER_EXTRA: \makeatother
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thefigure}{\arabic{figure}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thetable}{\arabic{table}}
+#+LaTeX_HEADER_EXTRA: \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+#+LaTeX_HEADER_EXTRA: \usepackage[top=2cm,bottom=2cm,left=3cm,right=3cm]{geometry}
+#+LaTeX_HEADER_EXTRA: \sloppy
+#+LaTeX_HEADER_EXTRA: \linespread{1.2}                    % 设置行距
+#+LaTeX_HEADER_EXTRA: \setlength{\parindent}{24pt}        % 段落缩进
+#+LaTeX_HEADER_EXTRA: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+#+LaTeX_HEADER_EXTRA: \pagestyle {plain}                  % 去掉页眉
+# +LaTeX_HEADER_EXTRA: \floatsetup[table]{style=plain,capposition=top,font=small}% 在.emacs文件中加载的floatsetup包取代了float包
+
+#+LATEX_HEADER: \author{\CJKfamily{kai} 金 \enspace 林 \\ \CJKfamily{kai} 中南财经政法大学统计系 \\ jinlin82@gmail.com}
+
+#+BEAMER_INNER_THEME: rounded [shadow]
+#+BEAMER_OUTER_THEME: infolines
+#+BEAMER_HEADER: \usecolortheme{seahorse}
+#+BEAMER_HEADER: \setbeamercolor{frametitle}{fg=Blue, bg=white}
+#+BEAMER_HEADER: \setbeamercolor{titlelike}{parent=structure}
+#+BEAMER_HEADER: \setbeamertemplate{caption}[numbered]
+#+BEAMER_HEADER: \setbeamertemplate{section in toc shaded}[default][50]
+#+BEAMER_HEADER: \setbeamertemplate{frametitle continuation}[from second][(续)] % 改变
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc shaded}[default][20]
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc}[square]
+#+BEAMER_HEADER: \setbeamerfont{item projected}{family=\fontspec{Microsoft YaHei}}
+#+BEAMER_HEADER: \setbeamercolor{item projected}{bg=RoyalPurple, fg=White}
+#+BEAMER_HEADER: \setbeamerfont{section number projected}{family=\fontspec{Microsoft YaHei}}
+#+BEAMER_HEADER: \setbeamercolor{section number projected}{bg=RoyalPurple, fg=White}
+#+BEAMER_HEADER: \logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+#+BEAMER_HEADER: \setbeamercovered{transparent}
+#+BEAMER_HEADER: \setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+#+BEAMER_HEADER: \usefonttheme[stillsansserifsmall,stillsansseriflarge]{serif}
+#+BEAMER_HEADER: \setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+#+BEAMER_HEADER: \AtBeginSection[]
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \setcounter{tocdepth}{2}
+#+BEAMER_HEADER: \frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \AtBeginSubsection[] % Do nothing for \subsection*
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \begin{frame}<beamer>
+#+BEAMER_HEADER: \frametitle{}
+#+BEAMER_HEADER: \large \tableofcontents[currentsection, sectionstyle=shaded/hide, subsectionstyle=show/shaded/hide]
+#+BEAMER_HEADER: \end{frame}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+# +BEAMER_HEADER: \usepackage[orientation=landscape,size=custom,width=16,height=9.75,scale=0.5,debug]{beamerposter}
+#+BEAMER_HEADER: \author[金\; 林(中南财经政法大学统计系)]{\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin82@qq.com}
+
+
+#+AUTHOR:\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin82@qq.com
+#+EMAIL: jinlin82@qq.com
+# +DATE: 2015年2月4日
+#+OPTIONS: H:3 toc:1 num:4 LaTeX:nil ^:{} email:nil tex:t author:nil arch:nil
+#+TITLE: R 软件介绍 (4)： R 统计作图
+#+PROPERTY: header-args
+#+PROPERTY: header-args:R :tangle yes

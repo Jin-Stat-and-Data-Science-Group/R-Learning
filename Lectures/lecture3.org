@@ -1,0 +1,342 @@
+* 简介
+*** R编程的目的
+     1. 使代码更简洁
+     2. 使代码更稳健
+     3. 使代码运行更快
+*** 基本概念
+     1. 成组表达式 (Grouped expressions)
+	1. 命令可以用大括弧圈在一起 ={expr 1; ...; expr m}= 。
+	2. 这一组命令的结果是该组中最后一个命令的值。
+	3. 一个组依然是一个表达式，它就可能放在括弧中，放在一个更大的表达式中
+     2. 面向对象编程
+     3. 函数式编程
+* 选择分支
+*** 条件控制： =if= 语句
+     1. =if= 语句
+
+	用法： *=if (cond) expr1=*
+
+	#+BEGIN_SRC R
+          x <- matrix(1:12, nrow=3)
+          if (is.integer(x)) print("x is a matrix")
+	#+END_SRC
+	
+
+     2. =if-else= 语句
+
+	用法: *=if (cond) expr1 else expr2=*
+
+        #+BEGIN_SRC R
+          if (r == 4) {
+          x <- 1
+          } else {
+          x <- 3
+          y <- 4
+          }
+        #+END_SRC
+
+     
+
+     3. 注意： 大括号的位置
+
+*** 向量形式：ifelse 语句
+     1. ifelse是if-else 条件语句的向量形式
+     2. 用法 *=ifelse(condition, a, b)=*
+     3. 最终返回一个和最长的参数向量同长的向量。condition[i] 为真时，该向量对应的元素是a[i]，否则为b[i]。
+	
+	
+
+        #+BEGIN_SRC R
+          x <- c(6:-4)
+          sqrt(x)  #- gives warning
+          sqrt(ifelse(x >= 0, x, NA))  # no warning
+          # Note: the following also gives the warning !
+          ifelse(x >= 0, sqrt(x), NA) 
+        #+END_SRC
+
+* 循环
+** 循环语句
+*** =for= 语句
+     1. 用法: *=for(var in seq) expr=*
+     2. 在 =var= 访问 =seq= 所有可以取到的值时， =expr= 都会运行。
+	
+
+     #+BEGIN_SRC R
+       x <- c(5, 12, 13)
+       for (i in x) print(i^2)
+     #+END_SRC
+
+     3. 例： 读入多个 ~csv~ 文件
+
+*** while 和 repeat 语句
+     1. =while= 语句用法：  *=repeat expr=*
+     2. =repeat= 语句用法： *=while (cond) expr=*
+     3. 关键字 =break= 可以用于结束任何循环，甚至是非常规的。它是结束 =repeat= 循环的唯一办法。
+     4. 关键字 =next= 可以用来结束一次特定的循环，然后直接跳入“下一次”循环。
+
+*** while 和 repeat 语句例子
+
+
+     #+BEGIN_SRC R
+       i <- 1
+       while (i <= 10) i <- i+4
+
+
+       i <- 1
+       while(TRUE) { # similar loop to above
+       i <- i+4
+       if (i > 10) break
+       }
+
+
+       i <- 1
+       repeat { # again similar
+       i <- i+4
+       if (i > 10) break
+       }
+     #+END_SRC
+
+** 向量化
+*** apply 类函数: ~R~ 函数式编程特点之一
+     1. =apply= 函数
+     2. =lapply= 函数
+     3. =sapply= 函数
+     4. =tapply= 函数
+     5. =by= 函数
+     6. =aggregate= 函数
+     7. ...
+*** apply 函数
+     1. 在 *矩阵* 的各行或各列上调用指定的函数。
+     2. 用法： *=apply(X, MARGIN, FUN, ...)=*
+     3. =apply()= 函数并不像很多人以为的那样，能使程序的运行速度加快。
+     4. 其优点是使程序更紧凑，更易于阅读和修改，并且避免产生使用循环语句时可能带来的bug。
+*** apply 函数例子
+
+     #+BEGIN_SRC R
+       m <- matrix(1:1000, nrow = 10)
+       colMeans(m)
+       apply(m, MARGIN = 2, FUN = mean)
+
+       apply(m, MARGIN = 2, FUN = var)
+     #+END_SRC
+
+*** lapply 函数和sapply 函数
+     1. 这两个函数可以在 *列表* 上应用函数。
+     2. 用法： =lapply(X, FUN)=
+     3. =lapply()= (代表list apply)与矩阵的 =apply()= 函数的用法相似，
+     4. 对列表(或强制转换)的每个分量执行给定的函数，并返回另一个列表。
+     5. 在某些情况下， =lapply()= 返回的列表可以转化为矩阵或向量的形式。这时候可以选择使用 =sapply()= (代表simplified [l]apply)
+
+*** lapply 函数和sapply 函数例子
+
+     #+BEGIN_SRC R
+       x1 <- 1:10
+       x2 <- 21:40
+       x3 <- 101:200
+
+       dat3 <- list(x1, x2, x3)
+       mean(dat3[[1]])
+       mean(dat3[[2]])
+
+       lapply(dat3, mean)
+       sd1 <- lapply(dat3, sd)
+       unlist(sd1)
+       sapply(dat3, sd)
+     #+END_SRC
+
+*** tapply 函数
+     1. 用于一个向量按照分类变量(因子)分组统计
+     2. 用法： *=tapply(v, INDEX, FUN)=*
+     3. 其中 =X= 通常是一向量； =INDEX= 是一个列表对象，且该列表中的每一个元素都是与 =X= 有同样长度的因子； =FUN= 是需要计算的函数
+     4. 利用 ~tapply~ 实现类似于 ~Excel~ 里的数据透视表的功能(同时使用多个)
+
+*** tapply 函数的例子
+
+     #+BEGIN_SRC R
+       iris <- read.table(file="clipboard", sep = "\t", header = T)
+
+       mean(iris[iris$Species=="A",1])
+       tapply(iris[,1],iris[,5],mean)
+       tapply(iris[,1],iris[,5],var)
+     #+END_SRC
+
+
+*** by 和 aggregate 函数
+     1. =by(=) 函数用于矩阵或数据框按照分类变量(因子)进行分成子集统计
+     2. =by()= 用法： *=by(X, INDEX, FUN)=*
+     3. =aggregate()= 函数用于同时对多个向量按照分类变量(因子)进行分组统计
+     4. =aggregate()= 用法： *=aggregate(X, by, FUN)=*
+     5. *注意* ： =aggregate()= 中的分类变量要使用列表(~list~)对象类型
+
+*** by 和 aggregate 函数的例子
+
+
+     #+BEGIN_SRC R
+       by(iris[,1:4], iris[,5], function(x) mean(as.matrix(x)))
+
+       aggregate(iris[,1:4], list(iris[,5]), mean)
+       aggregate(iris[,1:4], list(iris[,5]), sd)
+     #+END_SRC
+
+*** apply类函数总结
+[[file:./apply.png]]
+*** 向量化
+     1. 避免循环，加快速度
+     2. 简化代码
+	
+	#+BEGIN_SRC R
+          x1 <- 1:100000
+          x2 <- 100001:200000
+
+          # for loop
+          y1 <- vector()
+          system.time(for(i in 1:100000) y1[i] <- x1[i]+x2[i])
+
+          # vectorize
+          system.time(y2 <- x1+x2)
+	#+END_SRC
+
+* 编写函数
+*** 函数概述
+     1. 函数是一种特殊的对象
+     2. 函数主要用于操作处理对象
+     3. 有系统自带函数，也可以自己定义函数
+     4. 系统自带函数都存放在库(library)中
+     5. 一些最基本的系统函数是直接用C语言写的，其他的都是使用R语言写的，使用R
+        语言写的和用户自定义函数没有本质区别
+*** 几类特殊的函数
+     1. 泛型函数(generic function):根据使用的对象不同，从而得到不同结果的函数称为泛型函数。如 =summary=
+     2. 置换函数(replacement functions): 任何左边不是变量名的赋值语句都可以看作是"置换函数"。如  "=[<-=" , "=names<-="
+     3. 二元运算符：具有  ~%anything%~ 的形式。
+     4. 匿名函数：没有指定函数名的函数。
+
+*** 函数的基本操作
+     1. 查看函数内容：输入函数名称， =page()= 在新窗口中查看
+     2. 修改函数内容： =edit()=
+     3. 查看函数的参数： =formals()= ，查看函数的主体: =body()=
+     4. 查看泛型函数的所有具体函数： =methods()=
+
+*** 编写自定义函数
+     1. R 语言允许用户创建自己的函数（function）对象。
+     2. 自定义函数是通过下面的语句形式定义的：
+     \vskip 1pt
+        =name <- function(arg1, arg2, ...) expression=
+     1. 其中 =arg1, arg2= 是参数， =expression= 是成组表达式.
+     2. 参数可以被设定一些默认值。使用函数时如果默认值适合你要做的事情，则可以省略这些参数。
+
+*** 函数返回值
+     1. 函数的返回值可以是任何R对象。尽管返回值通常为列表形式，其实返回值甚至可以是另一个函数。
+     2. 可以通过显式地调用 =return()= ，把一个值返回给主调函数。
+     3. 如果不使用这条语句，默认将会把最后执行的语句的值作为返回值。
+
+*** 返回值的例子
+
+     #+BEGIN_SRC R
+       oddcount1 <- function(x) {
+       k <- 0 
+       for (n in x) {
+       if (n %% 2 == 1) k <- k+1 # 计算奇数的个数
+       }
+       return(k)
+       }
+
+       oddcount2 <- function(x) {
+       k <- 0
+       for (n in x) {
+       if (n %% 2 == 1) k <- k+1
+       }
+       k
+       }
+
+       oddcount3 <- function(x) {
+       k <- 0
+       for (n in x) {
+       if (n %% 2 == 1) k <- k+1
+       }}
+     #+END_SRC
+
+*** 函数式编程
+     ~R~ 中函数式编程三种工具：
+     1. 匿名函数
+     2. 函数列表
+     3. 闭包
+
+* Export Configuration 					   :noexport:ARCHIVE:
+#+LATEX_CLASS_OPTIONS: [11pt,xcolor=dvipsnames,aspectratio=1610,hyperref={bookmarksdepth=4}]
+# +LATEX_CLASS_OPTIONS: [UTF8,a4paper,12pt]{ctexart}  % Latex 去掉上面的语句，加上本语句
+#+LaTeX_HEADER_EXTRA: % ------------------------Chapter Section Title-------------------------
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={,、}, number={\chinese{section}}, aftername={},
+#+LaTeX_HEADER_EXTRA: format={\large \heiti }, indent={24pt},
+#+LaTeX_HEADER_EXTRA: beforeskip={1ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={1ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {section}
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={(,)}, number={\chinese{subsection}}, aftername={},
+#+LaTeX_HEADER_EXTRA: format={\normalsize \bfseries \songti}, indent={\parindent},
+#+LaTeX_HEADER_EXTRA: beforeskip={0.5ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={0.5ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {subsection}
+#+LaTeX_HEADER_EXTRA: \CTEXsetup[name={,.}, number={\arabic{subsubsection}},
+#+LaTeX_HEADER_EXTRA: aftername={}, format={\normalsize \bfseries \songti},indent={\parindent},
+#+LaTeX_HEADER_EXTRA: beforeskip={0ex plus 1ex minus .2ex},
+#+LaTeX_HEADER_EXTRA: afterskip={0.2ex plus 1ex minus .2ex}]
+#+LaTeX_HEADER_EXTRA: {subsubsection}
+#+LaTeX_HEADER_EXTRA: % ------------------------Figure and Table Caption---------------------
+#+LaTeX_HEADER_EXTRA: \makeatletter                        % 图表标题格式设置
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@table}[1]{\small \bfseries\textcolor{Violet}{\tablename\thetable~~}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\fnum@figure}[1]{\small \CJKfamily{hei} \textcolor{Violet}{\figurename\thefigure~~}}
+#+LaTeX_HEADER_EXTRA: \makeatother
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thefigure}{\arabic{figure}}
+#+LaTeX_HEADER_EXTRA: \renewcommand{\thetable}{\arabic{table}}
+#+LaTeX_HEADER_EXTRA: \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+#+LaTeX_HEADER_EXTRA: \usepackage[top=2cm,bottom=2cm,left=3cm,right=3cm]{geometry}
+#+LaTeX_HEADER_EXTRA: \sloppy
+#+LaTeX_HEADER_EXTRA: \linespread{1.2}                    % 设置行距
+#+LaTeX_HEADER_EXTRA: \setlength{\parindent}{24pt}        % 段落缩进
+#+LaTeX_HEADER_EXTRA: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+#+LaTeX_HEADER_EXTRA: \pagestyle {plain}                  % 去掉页眉
+# +LaTeX_HEADER_EXTRA: \floatsetup[table]{style=plain,capposition=top,font=small}% 在.emacs文件中加载的floatsetup包取代了float包
+
+#+LATEX_HEADER: \author{\CJKfamily{kai} 金 \enspace 林 \\ \CJKfamily{kai} 中南财经政法大学统计系 \\ jinlin82@gmail.com}
+
+
+#+BEAMER_HEADER: \usetheme{default}
+#+BEAMER_HEADER: \useinnertheme[shadow]{rounded}
+#+BEAMER_HEADER: \useoutertheme{infolines}
+#+BEAMER_HEADER: \usecolortheme{seahorse}
+#+BEAMER_HEADER: \setbeamercolor{frametitle}{fg=Blue, bg=white}
+#+BEAMER_HEADER: \setbeamercolor{titlelike}{parent=structure}
+#+BEAMER_HEADER: \setbeamertemplate{caption}[numbered]
+#+BEAMER_HEADER: \setbeamertemplate{section in toc shaded}[default][50]
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc shaded}[default][20]
+# +BEAMER_HEADER: \setbeamertemplate{section in toc}[circle]
+#+BEAMER_HEADER: \setbeamertemplate{subsection in toc}[square]
+#+BEAMER_HEADER: \logo{\includegraphics[height=0.6cm,width=0.6cm]{znufelogo.jpg}}
+#+BEAMER_HEADER: \setbeamercovered{transparent}
+#+BEAMER_HEADER: \setCJKmainfont[BoldFont={* Bold}]{Microsoft YaHei}
+#+BEAMER_HEADER: \usefonttheme[onlylarge]{structuresmallcapsserif}
+#+BEAMER_HEADER: \usefonttheme[onlymath]{serif}
+#+BEAMER_HEADER: \setbeamertemplate{frametitle}{\bfseries\insertframetitle\par\vskip-6pt}
+
+#+BEAMER_HEADER: \AtBeginSection[]
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \setcounter{tocdepth}{2}
+#+BEAMER_HEADER: \frame[shrink=5]{\tableofcontents[currentsection, hideothersubsections]}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \AtBeginSubsection[] % Do nothing for \subsection*
+#+BEAMER_HEADER: {
+#+BEAMER_HEADER: \begin{frame}<beamer>
+#+BEAMER_HEADER: \frametitle{}
+#+BEAMER_HEADER: \Large \tableofcontents[currentsubsection,sectionstyle=hide/hide, subsectionstyle=show/shaded/hide]
+#+BEAMER_HEADER: \end{frame}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+#+BEAMER_HEADER: \author[金\; 林(中南财经政法大学统计系)]{\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin@zuel.edu.cn}
+
+#+AUTHOR:\CJKfamily{kai} 金 \enspace 林 \\ 中南财经政法大学统计系 \\ jinlin82@gmail.com
+#+EMAIL: jinlin82@gmail.com
+# +DATE: 2017年秋
+#+OPTIONS: H:3 toc:1 num:4 LaTeX:nil ^:{} email:nil tex:t author:nil arch:nil
+#+TITLE: R 软件介绍 (3)： R编程基础
+#+PROPERTY: header-args
+#+PROPERTY: header-args:R :tangle yes
